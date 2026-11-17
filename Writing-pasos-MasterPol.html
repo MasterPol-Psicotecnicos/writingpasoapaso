@@ -1,0 +1,1416 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing paso a paso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+<style>
+/* Layout: menú lateral fijo (aprende · juega · practica) + columna de papel como los dossieres. Diseño claro deliberado. */
+:root {
+  --paper: #FFFDF8; --cream: #F4F1EA; --line: #D9D4C7;
+  --navy: #1B2A4A; --soft: #4A5570;
+  --orange: #EE7B22; --orange-ink: #B4500F;
+  --yellow: #F2C14E; --yellow-soft: #FBEFC9;
+  --blue: #3C6FB4; --blue-soft: #E3ECF7;
+  --white: #FFFFFF; --ok: #2E7D4F; --ok-soft: #E3F1E8; --bad-soft: #FCEBDD;
+  --font: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--navy); font-family: var(--font); font-size: 18px; line-height: 1.55; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button, input, textarea { font-family: inherit; }
+:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+/* ---------- estructura con menú ---------- */
+.app { display: grid; grid-template-columns: 270px minmax(0, 1fr); min-height: 100%; }
+.side { position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; overflow-y: auto; background: var(--navy); color: var(--white); padding: 22px 18px 30px; display: flex; flex-direction: column; gap: 22px; }
+.side a.brand, .side a.brand:hover { background: var(--paper); padding: 10px 12px; display: block; }
+.side .brand .logo { height: 32px; }
+.side h4 { margin: 0 0 6px; font-size: 12px; font-weight: 800; letter-spacing: 3px; color: var(--yellow); text-transform: uppercase; }
+.side ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.side a, .side button.lnk { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; color: var(--white); text-decoration: none; font: 600 15px/1.3 var(--font); padding: 7px 8px; background: transparent; border: 0; cursor: pointer; }
+.side a:hover, .side button.lnk:hover { background: rgba(255,255,255,.08); }
+.side a.on { background: rgba(255,255,255,.14); box-shadow: inset 4px 0 0 var(--orange); }
+.side .num { width: 22px; height: 22px; flex-shrink: 0; display: grid; place-items: center; font-size: 12px; font-weight: 900; border: 1.5px solid rgba(255,255,255,.5); }
+.side .ok .num { background: var(--ok); border-color: var(--ok); }
+.side .prog { background: rgba(255,255,255,.08); padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.side .bar2 { height: 8px; background: rgba(255,255,255,.18); }
+.side .bar2 i { display: block; height: 100%; background: var(--orange); width: 0; transition: width .3s; }
+.mtop { display: none; }
+.scrim { display: none; }
+main.wrap { max-width: 860px; width: 100%; margin: 0 auto; padding-block: 30px 64px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 38px; }
+
+/* ---------- piezas comunes ---------- */
+.top { display: none; }
+.logo { height: 38px; width: auto; display: block; }
+.kicker { font-size: 12px; font-weight: 800; letter-spacing: 3px; color: var(--soft); text-transform: uppercase; }
+.hero { display: flex; flex-direction: column; gap: 18px; border-bottom: 6px solid var(--navy); padding-bottom: 26px; }
+.hero h1 { font-size: clamp(46px, 9vw, 92px); font-weight: 900; line-height: .86; letter-spacing: -0.045em; }
+.hero h1 span { display: block; color: var(--orange); }
+.lead { font-size: 20px; max-width: 36em; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fact { padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; justify-content: space-between; }
+.fact b { font-size: 36px; font-weight: 900; line-height: .9; letter-spacing: -1px; }
+.fact span { font-size: 15px; font-weight: 700; line-height: 1.25; }
+.c1 { background: var(--navy); color: var(--white); } .c2 { background: var(--orange); color: var(--navy); }
+.c3 { background: var(--yellow); color: var(--navy); } .c4 { background: var(--blue); color: var(--white); }
+section { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
+.sh { display: flex; align-items: flex-end; gap: 18px; border-bottom: 6px solid var(--acc, var(--navy)); padding-bottom: 14px; }
+.sh .n { font-size: 84px; font-weight: 900; line-height: .75; letter-spacing: -5px; color: var(--acc, var(--navy)); flex-shrink: 0; }
+.sh h2 { font-size: clamp(28px, 6vw, 40px); font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.part { background: var(--navy); color: var(--white); padding: 22px 24px; display: flex; flex-direction: column; gap: 6px; scroll-margin-top: 16px; }
+.part h2 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -1.5px; line-height: 1; }
+.part p { font-size: 17px; opacity: .9; }
+.part .kicker { color: var(--yellow); }
+h3 { font-size: 22px; font-weight: 800; }
+.box { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.box.tip { background: var(--navy); color: var(--white); }
+.box.tip .lbl { color: var(--yellow); }
+.box.warn { background: var(--white); border: 3px solid var(--orange); }
+.box.warn .lbl { color: var(--orange-ink); }
+.box.say { background: var(--yellow-soft); }
+.lbl { font-size: 13px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
+ul, ol { margin: 0; padding-left: 24px; display: flex; flex-direction: column; gap: 6px; }
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.step { background: var(--cream); padding: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }
+.step .t { font-size: 13px; font-weight: 800; letter-spacing: 2px; color: var(--orange-ink); }
+.step h3 { font-size: 20px; }
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 16px; line-height: 1.4; }
+th { background: var(--navy); color: var(--white); text-align: left; padding: 9px 12px; font-size: 13px; font-weight: 800; letter-spacing: 1px; }
+td { padding: 9px 12px; border: 1px solid var(--line); vertical-align: top; background: var(--white); }
+tr:nth-child(even) td { background: var(--cream); }
+td:first-child { font-weight: 700; }
+.mail { background: var(--white); border: 1.5px solid var(--line); padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; font-size: 17px; }
+.mail .hdr { font-size: 15px; color: var(--soft); border-bottom: 1.5px solid var(--line); padding-bottom: 10px; display: flex; flex-direction: column; gap: 2px; }
+.mail .hdr b { color: var(--navy); }
+.task { background: var(--navy); color: var(--white); padding: 14px 18px; font-weight: 700; font-size: 17px; }
+.anat { display: flex; flex-direction: column; border: 1.5px solid var(--line); background: var(--white); }
+.anat .row { display: grid; grid-template-columns: 170px minmax(0, 1fr); border-bottom: 1.5px solid var(--line); }
+.anat .row:last-child { border-bottom: 0; }
+.anat .tag { padding: 14px; font-size: 14px; font-weight: 800; line-height: 1.3; display: flex; flex-direction: column; gap: 4px; }
+.anat .tag small { font-weight: 600; font-size: 13px; opacity: .85; }
+.anat .txt { padding: 14px 18px; font-size: 17px; }
+.f { background: var(--yellow-soft); box-shadow: inset 0 -3px 0 var(--yellow); }
+.k { color: var(--blue); font-weight: 800; }
+.legend { font-size: 14px; color: var(--soft); display: flex; gap: 16px; flex-wrap: wrap; }
+.errs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.err { background: var(--white); border: 1.5px solid var(--line); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 16px; }
+.err .no { color: var(--orange-ink); font-weight: 700; text-decoration: line-through; text-decoration-thickness: 2px; }
+.err .si { color: var(--ok); font-weight: 800; }
+.err .why { color: var(--soft); font-size: 15px; }
+.btn { appearance: none; border: 0; cursor: pointer; font-size: 17px; font-weight: 800; padding: 13px 22px; background: var(--navy); color: var(--white); }
+.btn:hover { background: #26395F; }
+.btn:disabled { background: var(--line); color: var(--soft); cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--navy); border: 2px solid var(--navy); padding: 10px 18px; font-size: 16px; }
+.btn.ghost:hover { background: var(--cream); }
+.btn.orange { background: var(--orange); color: var(--navy); }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
+.bar.start { justify-content: flex-start; }
+.score { font-weight: 800; font-size: 18px; }
+
+/* ---------- juegos ---------- */
+.game { display: flex; flex-direction: column; gap: 14px; border-top: 6px solid var(--acc); padding-top: 16px; scroll-margin-top: 16px; }
+.game .gh { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.game h3 { font-size: 26px; font-weight: 900; letter-spacing: -.5px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button { appearance: none; border: 2px solid var(--navy); background: transparent; color: var(--navy); font: 700 14px var(--font); padding: 6px 12px; cursor: pointer; }
+.tabs button[aria-pressed="true"] { background: var(--navy); color: var(--white); }
+.ord { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ord li { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--white); border: 2px solid var(--line); padding: 10px 12px; font-size: 16px; }
+.ord li .pos { width: 30px; height: 30px; display: grid; place-items: center; background: var(--cream); font-weight: 900; }
+.ord li .mv { display: flex; flex-direction: column; gap: 4px; }
+.ord li .mv button { appearance: none; width: 36px; height: 30px; border: 1.5px solid var(--navy); background: var(--paper); color: var(--navy); font-weight: 900; cursor: pointer; }
+.ord li .mv button:disabled { opacity: .3; cursor: default; }
+.ord li.good { border-color: var(--ok); background: var(--ok-soft); }
+.ord li.bad { border-color: var(--orange); background: var(--bad-soft); }
+.ord li.drag { opacity: .5; }
+.hunt { text-align: left; background: var(--white); border: 1.5px solid var(--line); padding: 18px 20px; font-size: 18px; line-height: 2.05; }
+.hunt p { margin: 0 0 6px; }
+.w { cursor: pointer; padding: 1px 0; border-radius: 2px; }
+.w:hover { background: var(--cream); }
+.w.sel { background: var(--yellow-soft); box-shadow: inset 0 -3px 0 var(--yellow); }
+.w.hit { background: var(--ok-soft); box-shadow: inset 0 -3px 0 var(--ok); }
+.w.miss { background: var(--bad-soft); box-shadow: inset 0 -3px 0 var(--orange); }
+.w.wrongpick { text-decoration: line-through; color: var(--soft); background: transparent; box-shadow: none; }
+.w.fix::after { content: " → " attr(data-c); color: var(--ok); font-weight: 800; }
+.mc { display: flex; flex-direction: column; gap: 10px; }
+.mcq { background: var(--white); border: 1.5px solid var(--line); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.mcq .st { font-size: 19px; font-weight: 700; }
+.mcq .st .gap { display: inline-block; min-width: 4em; border-bottom: 3px solid var(--navy); }
+.mcq .ops { display: flex; flex-wrap: wrap; gap: 8px; }
+.mcq .ops button { appearance: none; border: 2px solid var(--line); background: var(--paper); color: var(--navy); font: 600 16px var(--font); padding: 8px 14px; cursor: pointer; text-align: left; }
+.mcq .ops button:hover { border-color: var(--navy); }
+.mcq .ops button.right { background: var(--ok-soft); border-color: var(--ok); font-weight: 800; }
+.mcq .ops button.wrong { background: var(--bad-soft); border-color: var(--orange); text-decoration: line-through; }
+.mcq .why { font-size: 15px; color: var(--soft); }
+.result { padding: 12px 16px; font-weight: 700; background: var(--cream); }
+.result.ok { background: var(--ok-soft); }
+
+/* ---------- práctica ---------- */
+.who { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; background: var(--cream); padding: 18px 20px; }
+.who label { display: flex; flex-direction: column; gap: 6px; flex: 1 1 260px; font-size: 14px; font-weight: 700; }
+input[type=text] { font-size: 18px; padding: 12px 14px; border: 2px solid var(--line); background: var(--white); color: var(--navy); border-radius: 0; }
+input[type=text]:focus, textarea:focus { border-color: var(--navy); outline: none; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.card { appearance: none; text-align: left; cursor: pointer; border: 0; padding: 14px; display: flex; flex-direction: column; gap: 14px; justify-content: space-between; min-height: 140px; font: inherit; }
+.card b { font-size: 40px; font-weight: 900; line-height: .85; letter-spacing: -1px; }
+.card span { font-size: 16px; font-weight: 800; line-height: 1.25; }
+.card small { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: .85; margin-top: 4px; }
+.card[aria-pressed="true"] { outline: 4px solid var(--navy); outline-offset: 3px; }
+.card .done { font-size: 12px; font-weight: 900; letter-spacing: 1px; background: var(--paper); color: var(--ok); padding: 3px 8px; align-self: flex-start; }
+.panel { display: flex; flex-direction: column; gap: 16px; border-top: 6px solid var(--acc, var(--navy)); padding-top: 18px; scroll-margin-top: 16px; }
+.panel h3 { font-size: 28px; font-weight: 900; letter-spacing: -.5px; }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mode { appearance: none; text-align: left; cursor: pointer; border: 2px solid var(--navy); background: var(--paper); color: var(--navy); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; font: inherit; }
+.mode b { font-size: 19px; font-weight: 900; }
+.mode span { font-size: 15px; }
+.mode[aria-pressed="true"] { background: var(--navy); color: var(--white); }
+textarea { width: 100%; min-height: 300px; padding: 14px; font-size: 18px; line-height: 1.6; border: 2px solid var(--line); background: var(--white); color: var(--navy); resize: vertical; border-radius: 0; }
+.guide { display: flex; flex-direction: column; gap: 14px; }
+.gpart { display: flex; flex-direction: column; gap: 6px; }
+.gpart .gl { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.gpart:not(.act) .chips { display: none; }
+.gpart .gl b { font-size: 15px; font-weight: 900; padding: 3px 8px; }
+.gpart .gl span { font-size: 15px; color: var(--soft); }
+.gpart textarea { min-height: 70px; }
+.gpart.body textarea { min-height: 100px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { appearance: none; border: 1.5px dashed var(--blue); background: var(--blue-soft); color: var(--navy); font: 600 14px var(--font); padding: 4px 10px; cursor: pointer; }
+.chip:hover { border-style: solid; }
+.wc { font-weight: 800; font-variant-numeric: tabular-nums; }
+.wc.low { color: var(--orange-ink); } .wc.good { color: var(--ok); }
+.timer { font-variant-numeric: tabular-nums; font-weight: 800; }
+.check { display: flex; flex-direction: column; gap: 8px; background: var(--cream); padding: 16px 18px; }
+.check label { display: flex; gap: 10px; align-items: flex-start; font-size: 17px; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--navy); flex-shrink: 0; }
+.review { display: flex; flex-direction: column; gap: 8px; background: var(--white); border: 2px solid var(--navy); padding: 16px 18px; }
+.review ul { list-style: none; padding: 0; gap: 8px; }
+.review li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; font-size: 16px; }
+.review .m { width: 24px; height: 24px; display: grid; place-items: center; font-weight: 900; font-size: 14px; color: var(--white); }
+.review .ok .m { background: var(--ok); } .review .warn .m { background: var(--orange-ink); } .review .info .m { background: var(--blue); }
+.review .d { color: var(--soft); font-size: 15px; }
+.sent { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--cream); font-size: 17px; font-weight: 700; }
+.sent .ic { width: 34px; height: 34px; flex-shrink: 0; display: grid; place-items: center; background: var(--navy); color: var(--white); font-weight: 900; }
+.sent.ok { background: var(--ok-soft); } .sent.ok .ic { background: var(--ok); }
+.sent.no { background: var(--bad-soft); } .sent.no .ic { background: var(--orange-ink); }
+.confirm { background: var(--bad-soft); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; font-size: 17px; }
+.foot { font-size: 13px; color: var(--soft); border-top: 3px solid var(--navy); padding-top: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-weight: 600; }
+
+@media (max-width: 960px) {
+  .app { display: block; }
+  .mtop { display: flex; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; align-items: center; justify-content: space-between; gap: 12px; background: var(--paper); border-bottom: 3px solid var(--navy); padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .mtop .logo { height: 28px; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 31; background: var(--paper); }
+  .side { position: fixed; z-index: 50; top: 0; bottom: 0; left: 0; width: min(300px, 86vw); height: auto; transform: translateX(-105%); transition: transform .25s; padding-top: calc(22px + env(safe-area-inset-top, 0px)); padding-left: max(18px, env(safe-area-inset-left, 0px)); }
+  .side.open { transform: none; }
+  .scrim.open { display: block; position: fixed; inset: 0; z-index: 40; background: rgba(27,42,74,.45); }
+  main.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  section, .part, .game, .panel { scroll-margin-top: 70px; }
+}
+@media (max-width: 680px) {
+  .facts, .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .errs, .modes { grid-template-columns: 1fr; }
+  .anat .row { grid-template-columns: 1fr; }
+  .anat .tag { padding-bottom: 0; flex-direction: row; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .sh .n { font-size: 60px; letter-spacing: -3px; }
+}
+@media (prefers-reduced-motion: reduce) { .side, .side .bar2 i { transition: none; } }
+
+/* ---------- v3: por pasos ---------- */
+main.wrap { gap: 18px; }
+.paso { display: flex; flex-direction: column; gap: 16px; }
+.paso[hidden] { display: none; }
+.paso > section { padding: 0; }
+.topbar { display: flex; flex-direction: column; gap: 8px; }
+.topbar .kicker { color: var(--navy); }
+.pbar { height: 10px; background: var(--cream); }
+.pbar i { display: block; height: 100%; width: 0; background: var(--orange); transition: width .3s; }
+.howto { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.hw { padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; justify-content: space-between; }
+.hw b { font-size: 34px; font-weight: 900; line-height: .9; }
+.hw span { font-size: 15px; font-weight: 700; line-height: 1.25; }
+.practice { display: flex; flex-direction: column; gap: 12px; border: 3px solid var(--navy); padding: 16px 18px 18px; background: var(--white); margin-top: 10px; }
+.practice .plabel { align-self: flex-start; margin: -30px 0 0 -4px; background: var(--navy); color: var(--white); font-size: 13px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; padding: 5px 12px; }
+.practice .hunt, .practice .ord li { background: var(--paper); }
+.gh { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.score { font-weight: 800; font-size: 16px; padding: 3px 10px; background: var(--cream); }
+.score.ok { background: var(--ok-soft); color: var(--ok); }
+.score.mid { background: var(--bad-soft); color: var(--orange-ink); }
+.msgres { font-weight: 700; font-size: 16px; }
+.ex { display: flex; flex-direction: column; gap: 12px; }
+.ex .eh { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.ex h3 { font-size: 22px; }
+.ex .inst { font-size: 16px; color: var(--soft); }
+.items { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.it { background: var(--paper); border: 1.5px solid var(--line); padding: 10px 14px; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.it .k { font-weight: 900; color: var(--soft); }
+.it .body { display: flex; flex-direction: column; gap: 8px; }
+.it .q { font-size: 17px; font-weight: 600; }
+.it.good { border-color: var(--ok); background: var(--ok-soft); }
+.it.bad { border-color: var(--orange); background: var(--bad-soft); }
+.it.retry { border-color: var(--yellow); background: var(--yellow-soft); }
+.ops { display: flex; flex-wrap: wrap; gap: 6px; }
+.opt { appearance: none; border: 2px solid var(--line); background: var(--white); color: var(--navy); font: 600 15px var(--font); padding: 6px 12px; cursor: pointer; text-align: left; }
+.opt:hover { border-color: var(--navy); }
+.opt:disabled { cursor: default; }
+.opt.right { background: var(--ok-soft); border-color: var(--ok); font-weight: 800; }
+.opt.wrong { background: var(--bad-soft); border-color: var(--orange); text-decoration: line-through; }
+.hole { white-space: nowrap; }
+.fb { font-size: 15px; }
+.fb b { color: var(--ok); }
+.fb .tag { display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 7px; margin-right: 6px; vertical-align: 1px; }
+.fb .tag.p { background: var(--yellow); color: var(--navy); }
+.fb .tag.s { background: var(--orange-ink); color: var(--white); }
+.fb .tag.k { background: var(--ok); color: var(--white); }
+.hintbox { background: var(--yellow-soft); padding: 12px 16px; font-size: 16px; }
+.hintbox .tag { display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 7px; margin-right: 6px; background: var(--yellow); }
+.hunt .s { cursor: pointer; padding: 2px 1px; }
+.hunt .s:hover { background: var(--cream); }
+.hunt .s.sel { background: var(--yellow-soft); box-shadow: inset 0 -3px 0 var(--yellow); }
+.hunt .s.hit { background: var(--ok-soft); box-shadow: inset 0 -3px 0 var(--ok); cursor: default; }
+.hunt .s.miss { background: var(--bad-soft); box-shadow: inset 0 -3px 0 var(--orange); }
+.hunt .s.wrongpick { text-decoration: line-through; color: var(--soft); }
+.hunt.mailtxt { line-height: 1.9; font-size: 17px; }
+.w.hit { cursor: default; }
+.w.wrongpick { background: transparent; box-shadow: none; }
+.stepnav { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 3px solid var(--navy); padding-top: 16px; margin-top: 10px; }
+.stepnav #navInfo { font-size: 14px; font-weight: 700; color: var(--soft); text-align: center; }
+.stepnav .btn:disabled { visibility: hidden; }
+.mstep { font-size: 13px; font-weight: 800; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side ul button.lnk.on { background: rgba(255,255,255,.14); box-shadow: inset 4px 0 0 var(--orange); }
+.side .prog span { display: block; }
+.nota { background: var(--navy); color: var(--white); padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.nota .kicker { color: var(--yellow); }
+.nota .big2 { font-size: 76px; font-weight: 900; line-height: .85; letter-spacing: -3px; }
+.nota table { font-size: 15px; }
+.nota td { background: rgba(255,255,255,.06) !important; border-color: rgba(255,255,255,.15); color: var(--white); }
+.nota td:last-child { text-align: right; font-weight: 800; white-space: nowrap; }
+.nota p { font-size: 15px; opacity: .9; }
+.rand { align-self: flex-start; }
+@media (max-width: 960px) {
+  .mtop { gap: 10px; }
+  .mtop .mstep { flex: 1; text-align: center; }
+  .topbar { display: none; }
+  .paso { scroll-margin-top: 70px; }
+}
+@media (max-width: 680px) {
+  .howto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stepnav .btn { padding: 10px 14px; font-size: 15px; }
+  .stepnav #navInfo { display: none; }
+  .stepnav #prev { white-space: nowrap; }
+  .practice { padding: 14px 12px; }
+  .it { padding: 10px; grid-template-columns: 22px minmax(0, 1fr); }
+}
+
+/* ---------- menú desplegable (en todas las pantallas) ---------- */
+.app { display: block; }
+.mtop { display: flex; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; align-items: center; justify-content: space-between; gap: 14px; background: var(--paper); border-bottom: 3px solid var(--navy); padding-block: 10px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+.mtop .logo { height: 30px; }
+.mtop .mstep { flex: 1; text-align: center; font-size: 14px; }
+.mtop .mbar { position: absolute; left: 0; right: 0; bottom: -3px; height: 3px; background: transparent; }
+.mtop .mbar i { display: block; height: 100%; width: 0; background: var(--orange); transition: width .3s; }
+#menuBtn[aria-expanded="true"] { background: var(--navy); color: var(--white); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 31; background: var(--paper); }
+.side { display: none; position: fixed; z-index: 50; top: calc(env(safe-area-inset-top, 0px) + 62px); right: max(24px, env(safe-area-inset-right, 0px)); left: auto; bottom: auto; width: min(340px, calc(100vw - 32px)); height: auto; max-height: calc(100vh - 80px); overflow-y: auto; transform: none; transition: none; padding: 18px 16px 20px; gap: 18px; box-shadow: 0 14px 40px rgba(27,42,74,.35); }
+.side.open { display: flex; transform: none; }
+.side .brand { display: none !important; }
+.scrim.open { display: block; position: fixed; inset: 0; z-index: 40; background: rgba(27,42,74,.25); }
+.topbar { display: none; }
+.paso, section, .practice { scroll-margin-top: 80px; }
+@media (max-width: 680px) {
+  .mtop { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .mtop .logo { height: 26px; }
+  .mtop .mstep { font-size: 13px; }
+  .side { right: max(16px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 56px); }
+}
+#mlogo { flex-shrink: 0; display: block; line-height: 0; } #mlogo .logo { width: auto; } #menuBtn { flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+
+<div class="mtop"><span aria-hidden="true" id="mlogo"></span><span class="mstep" id="mstep"></span><button class="btn ghost" type="button" id="menuBtn" aria-expanded="false" aria-controls="side">☰ Pasos</button><div class="mbar" aria-hidden="true"><i id="mbar"></i></div></div>
+<div class="scrim" id="scrim"></div>
+<div class="app">
+  <aside class="side" id="side" aria-label="Menú">
+    <a class="brand" href="#paso-0" aria-label="Inicio"><svg class="logo" role="img" aria-label="MasterPol · Formación y oposiciones" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 495.58 111.44">
+  <defs>
+    
+    <linearGradient id="Degradado_sin_nombre_3" x1="405.53" y1="1270.32" x2="488.86" y2="1270.32" gradientTransform="translate(0 1329.17) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f6a709"/>
+      <stop offset="1" stop-color="#e21c1c"/>
+    </linearGradient>
+    <linearGradient id="Degradado_sin_nombre_3-2" y1="1265.75" x2="488.86" y2="1265.75" xlink:href="#Degradado_sin_nombre_3"/>
+    <linearGradient id="Degradado_sin_nombre_3-3" x1="405.53" y1="1271.46" x2="488.86" y2="1271.46" xlink:href="#Degradado_sin_nombre_3"/>
+    <linearGradient id="Degradado_sin_nombre_4" x1="107.68" y1="1272.23" x2="11.27" y2="1224.02" gradientTransform="translate(0 1329.17) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e21c1c"/>
+      <stop offset="1" stop-color="#f6a709"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <g>
+      <g>
+        <path fill="#1d2f56" d="M161.87,99.35c0-.46.4-.85.87-.85h8.18c.83,0,.83,1.25,0,1.25h-7.63v4.98h7.25c.77,0,.81,1.23,0,1.23h-7.25v4.65c0,.99-1.43.99-1.43.02v-11.28Z"/>
+        <path fill="#1d2f56" d="M173.33,104.6c0-3.12,2.11-5.78,5.26-6.28.73-.1,1.41-.08,2.1,0,3.06.48,5.42,3.02,5.42,6.28,0,4.13-2.98,6.75-6.36,6.75-3.58,0-6.44-2.54-6.44-6.75ZM174.82,104.65c0,3.26,2.14,5.32,4.95,5.32s4.89-1.99,4.89-5.32c0-2.56-1.69-4.61-4.13-5.01-.6-.08-1.17-.08-1.73,0-2.4.38-3.97,2.3-3.97,5.01Z"/>
+        <path fill="#1d2f56" d="M190.36,106.7v3.85c0,.91-1.45.91-1.45.02v-11.4c0-.42.3-.69.73-.69h4.71c3.44,0,5.18,1.95,5.18,4.27,0,2.01-1.09,3.46-3.54,3.87l3.22,3.48c.76.76-.34,1.63-.99.95l-4.01-4.35h-3.85ZM190.36,105.45h4.01c2.6,0,3.73-1.21,3.69-2.7-.02-1.63-1.39-2.94-3.69-2.94h-4.01v5.64Z"/>
+        <path fill="#1d2f56" d="M213.01,98.8c.46-.72,1.37-.48,1.37.36v11.44c0,.95-1.45.95-1.45,0v-9.04l-4.05,6.34c-.32.58-1.07.58-1.37,0l-4.05-6.32v9.02c0,.95-1.45.95-1.45,0v-11.44c0-.85.95-1.07,1.35-.36l4.85,7.55,4.81-7.55Z"/>
+        <path fill="#1d2f56" d="M219.35,107.79l-1.61,3.14c-.36.73-1.67.22-1.31-.58l6-11.82c.12-.26.4-.38.66-.38s.5.12.64.38l5.98,11.76c.52.85-.95,1.35-1.33.58l-1.55-3.08h-7.47ZM223.08,100.29l-3.14,6.26h6.26l-3.12-6.26Z"/>
+        <path fill="#1d2f56" d="M240.03,110.63c-.95.44-2.03.71-2.98.71-3.4,0-6.46-2.78-6.46-6.71,0-3.26,2.32-5.84,5.38-6.32,2.32-.32,4.35.26,5.92,1.91.6.68-.48,1.49-1.03.89-1.35-1.43-2.92-1.65-4.67-1.45-2.44.38-4.17,2.1-4.17,4.98s2.32,5.32,5.07,5.32c.73,0,1.55-.2,2.3-.58.62-.32,1.21-.79,1.63-1.33.46-.68,1.67.06,1.15.79-.54.75-1.29,1.35-2.15,1.77Z"/>
+        <path fill="#1d2f56" d="M244.44,98.76c0-.99,1.49-.97,1.49,0v11.88c0,.91-1.49.95-1.49,0v-11.88Z"/>
+        <path fill="#1d2f56" d="M254.61,111.35c-3.57,0-6.44-2.54-6.44-6.75,0-3.12,2.11-5.78,5.26-6.28.73-.1,1.41-.08,2.1,0,3.06.48,5.42,3.02,5.42,6.28,0,4.13-2.98,6.75-6.36,6.75ZM253.64,99.65c-2.4.38-3.97,2.3-3.97,5.01,0,3.26,2.15,5.32,4.95,5.32s4.89-1.99,4.89-5.32c0-2.56-1.69-4.61-4.13-5.01-.6-.08-1.17-.08-1.73,0ZM254.22,96.67c-.4.52.38,1.19,1.07.62l1.71-1.57c.68-.66-.6-1.45-1.23-.66l-1.55,1.61Z"/>
+        <path fill="#1d2f56" d="M272.71,98.97c0-.83,1.51-.87,1.51,0v11.4c0,.99-1.37,1.09-1.79.4l-7.43-9.95.16,2.74v7.01c0,.97-1.51.99-1.51,0v-11.38c0-.99,1.11-1.15,1.61-.42l7.65,10.23-.2-3v-7.03h0Z"/>
+        <path fill="#1d2f56" d="M286.6,106.03l-5.03-6.65c-.6-.79.72-1.53,1.25-.74l4.49,6.14,4.55-6.16c.5-.76,1.73-.12,1.19.72l-4.99,6.69v4.45c0,.5-.4.73-.73.73-.4,0-.73-.24-.73-.73v-4.45h0Z"/>
+        <path fill="#1d2f56" d="M299.82,104.6c0-3.12,2.11-5.78,5.26-6.28.73-.1,1.41-.08,2.1,0,3.06.48,5.42,3.02,5.42,6.28,0,4.13-2.98,6.75-6.36,6.75-3.58,0-6.44-2.54-6.44-6.75ZM301.31,104.65c0,3.26,2.14,5.32,4.95,5.32s4.89-1.99,4.89-5.32c0-2.56-1.69-4.61-4.13-5.01-.6-.08-1.17-.08-1.73,0-2.4.38-3.97,2.3-3.97,5.01Z"/>
+        <path fill="#1d2f56" d="M316.83,107.4v3.2c0,.91-1.43.89-1.43.02v-11.44c0-.42.34-.69.73-.69h4.31c3.44,0,5.05,2.28,5.05,4.57s-1.63,4.35-5.11,4.35h-3.56ZM316.83,106.11h3.56c2.64,0,3.73-1.55,3.69-3.06-.02-1.63-1.31-3.28-3.61-3.28h-3.63v6.34Z"/>
+        <path fill="#1d2f56" d="M327.34,104.6c0-3.12,2.11-5.78,5.26-6.28.73-.1,1.41-.08,2.1,0,3.06.48,5.42,3.02,5.42,6.28,0,4.13-2.98,6.75-6.36,6.75-3.57,0-6.44-2.54-6.44-6.75ZM328.83,104.65c0,3.26,2.15,5.32,4.95,5.32s4.89-1.99,4.89-5.32c0-2.56-1.69-4.61-4.13-5.01-.6-.08-1.17-.08-1.73,0-2.4.38-3.97,2.3-3.97,5.01Z"/>
+        <path fill="#1d2f56" d="M343.31,107.99c.52,1.65,2.72,2.01,4.31,2.01,1.69,0,4.31-.52,4.31-2.52,0-1.73-2.09-1.87-4.27-2.05-2.74-.22-5.68-.48-5.68-3.44,0-2.62,3.02-3.79,5.44-3.79,2.09,0,4.69.5,5.52,2.76.3.79-1.05,1.15-1.35.48-.6-1.51-2.72-1.77-4.15-1.77-1.33,0-3.91.54-3.91,2.34s1.99,1.91,4.29,2.09c2.72.24,5.64.38,5.64,3.36s-3.4,3.97-5.84,3.97c-2.03,0-5.12-.69-5.78-3.08-.24-.87,1.31-1.17,1.47-.36Z"/>
+        <path fill="#1d2f56" d="M355.61,98.76c0-.99,1.49-.97,1.49,0v11.88c0,.91-1.49.95-1.49,0v-11.88Z"/>
+        <path fill="#1d2f56" d="M368.82,110.63c-.95.44-2.03.71-2.98.71-3.4,0-6.46-2.78-6.46-6.71,0-3.26,2.32-5.84,5.38-6.32,2.32-.32,4.35.26,5.92,1.91.6.68-.48,1.49-1.03.89-1.35-1.43-2.92-1.65-4.67-1.45-2.44.38-4.17,2.1-4.17,4.98s2.32,5.32,5.07,5.32c.73,0,1.55-.2,2.3-.58.62-.32,1.21-.79,1.63-1.33.46-.68,1.67.06,1.15.79-.54.75-1.29,1.35-2.15,1.77Z"/>
+        <path fill="#1d2f56" d="M373.23,98.76c0-.99,1.49-.97,1.49,0v11.88c0,.91-1.49.95-1.49,0v-11.88Z"/>
+        <path fill="#1d2f56" d="M376.97,104.6c0-3.12,2.11-5.78,5.26-6.28.73-.1,1.41-.08,2.1,0,3.06.48,5.42,3.02,5.42,6.28,0,4.13-2.98,6.75-6.36,6.75-3.58,0-6.44-2.54-6.44-6.75ZM378.46,104.65c0,3.26,2.15,5.32,4.95,5.32s4.89-1.99,4.89-5.32c0-2.56-1.69-4.61-4.13-5.01-.6-.08-1.17-.08-1.73,0-2.4.38-3.97,2.3-3.97,5.01Z"/>
+        <path fill="#1d2f56" d="M401.5,98.97c0-.83,1.51-.87,1.51,0v11.4c0,.99-1.37,1.09-1.79.4l-7.43-9.95.16,2.74v7.01c0,.97-1.51.99-1.51,0v-11.38c0-.99,1.11-1.15,1.61-.42l7.65,10.23-.2-3v-7.03h0Z"/>
+        <path fill="#1d2f56" d="M407.71,109.82h7.85c.83,0,.95,1.31,0,1.31h-8.36c-.56,0-.91-.4-.91-.87v-10.91c0-.46.36-.85.91-.85h8.38c.85,0,.81,1.27-.02,1.27h-7.85v4.47h7.47c.79,0,.83,1.27,0,1.27h-7.47v4.31Z"/>
+        <path fill="#1d2f56" d="M419.37,107.99c.52,1.65,2.72,2.01,4.31,2.01,1.69,0,4.31-.52,4.31-2.52,0-1.73-2.09-1.87-4.27-2.05-2.74-.22-5.68-.48-5.68-3.44,0-2.62,3.02-3.79,5.44-3.79,2.09,0,4.69.5,5.52,2.76.3.79-1.05,1.15-1.35.48-.6-1.51-2.72-1.77-4.15-1.77-1.33,0-3.91.54-3.91,2.34s1.99,1.91,4.29,2.09c2.72.24,5.64.38,5.64,3.36s-3.4,3.97-5.84,3.97c-2.03,0-5.12-.69-5.78-3.08-.24-.87,1.31-1.17,1.47-.36Z"/>
+      </g>
+      <g>
+        <g>
+          <path fill="url(#Degradado_sin_nombre_3)" d="M417.4,34.65h-16.3c-1.5,0-2.78,1.05-2.78,2.63v43.26c0,3.3,5.41,3.38,5.41-.07v-12.09h13.44c13.14,0,19.3-7.43,19.3-16.45,0-8.64-6.08-17.27-19.07-17.27ZM417.17,63.49h-13.44v-23.96h13.74c8.71,0,13.59,6.23,13.67,12.39.15,5.71-3.98,11.57-13.97,11.57Z"/>
+          <path fill="url(#Degradado_sin_nombre_3-2)" d="M468.54,44.34c-1.95-.53-3.75-.68-5.56-.68s-3.9.15-5.71.68c-8.26,2.33-13.14,9.31-13.89,17.65-.23,5.63,1.2,10.44,4.58,14.42,3.68,4.43,9.01,6.76,15.02,6.76s11.34-2.33,15.02-6.76c3.3-3.98,4.81-8.79,4.51-14.42-.68-8.41-5.78-15.32-13.97-17.65ZM473.8,73.1c-2.63,3-6.76,4.96-10.81,4.96s-8.11-1.8-10.74-4.96c-2.25-2.63-3.3-6.16-3.3-9.54,0-6.76,3.68-12.62,9.99-14.27,1.13-.3,2.55-.53,3.98-.53s2.93.23,4.13.53c6.38,1.65,10.06,7.59,10.06,14.42,0,3.23-1.2,6.83-3.3,9.39Z"/>
+          <path fill="url(#Degradado_sin_nombre_3-3)" d="M492.87,32.63c-1.65,0-2.78,1.13-2.78,2.55v45.06c0,1.43,1.13,2.55,2.78,2.55,1.5,0,2.7-1.13,2.7-2.55v-45.06c0-1.43-1.2-2.55-2.7-2.55Z"/>
+        </g>
+        <g>
+          <path fill="#1d2f56" d="M204.14,31.34c-1.11.78-2.1,1.74-2.95,2.86-.86,1.12-1.53,2.36-2.02,3.7l-10.52,29.92-10.63-29.96c-.49-1.34-1.16-2.57-2-3.68-.84-1.11-1.83-2.06-2.95-2.84-1.12-.78-2.35-1.39-3.69-1.83-1.33-.44-2.71-.66-4.13-.66h-4.91v53.76h2.31c1.2,0,2.33-.23,3.41-.68,1.08-.45,2.01-1.07,2.81-1.87.79-.79,1.42-1.72,1.89-2.79.46-1.06.7-2.21.7-3.43v-27.87s12.03,33.04,12.03,33.04c.42,1.1,1.09,1.97,2.02,2.62.93.65,1.97.97,3.12.97s2.18-.32,3.1-.97c.92-.65,1.58-1.52,2-2.62l12.14-33.04-.04,27.87c0,1.22.23,2.37.7,3.43.46,1.06,1.09,1.99,1.89,2.79.79.8,1.72,1.42,2.79,1.87,1.06.45,2.21.68,3.43.68h2.31V28.84s-7.78.22-9.11.66c-1.33.44-2.56,1.05-3.67,1.83Z"/>
+          <path fill="#1d2f56" d="M294.76,64.5c-.5-.57-1.08-1.09-1.74-1.56-.66-.46-1.37-.89-2.13-1.28-.76-.39-1.59-.73-2.49-1.03-1.86-.61-3.81-1.11-5.87-1.5-.66-.12-1.27-.26-1.83-.4-.56-.15-1.08-.29-1.54-.44-.49-.17-.92-.34-1.28-.51-.37-.17-.68-.35-.95-.55-.59-.37-.99-.77-1.21-1.21-.27-.42-.4-.92-.4-1.5,0-1.25.49-2.25,1.47-3.01.95-.81,2.3-1.21,4.03-1.21,1.03,0,1.88.06,2.57.18.68.12,1.31.39,1.87.81.49.34.87.74,1.16,1.19.28.45.48.92.61,1.41.07.29.16.6.27.92.11.32.23.63.35.93.12.31.25.58.38.83.13.24.26.43.38.55.76.93,1.69,1.66,2.81,2.2,1.11.54,2.34.81,3.69.81h2.2v-4.99c-.05-1.71-.43-3.29-1.14-4.73-.76-1.54-1.83-2.85-3.23-3.92-.71-.56-1.48-1.06-2.33-1.49-.84-.43-1.77-.81-2.77-1.16-1.93-.61-4.19-.92-6.78-.92-2.37,0-4.54.32-6.49.95-1.93.66-3.57,1.55-4.91,2.68-1.27,1.05-2.29,2.32-3.04,3.81-.68,1.52-1.03,3.06-1.03,4.62,0,1.71.34,3.18,1.03,4.4.34.64.76,1.23,1.25,1.8.49.56,1.03,1.09,1.61,1.58.64.47,1.32.9,2.05,1.3.73.4,1.52.76,2.35,1.08.86.32,1.74.61,2.64.88s1.87.51,2.9.73c.78.2,1.51.37,2.18.53.67.16,1.26.32,1.78.49.51.2.97.38,1.38.57.4.18.76.38,1.08.6.59.37.98.78,1.17,1.25.22.44.33.94.33,1.5,0,1.22-.5,2.2-1.5,2.93-1,.78-2.51,1.17-4.51,1.17-.95,0-1.85-.11-2.68-.33-.86-.27-1.6-.61-2.24-1.03-.66-.44-1.17-1.03-1.54-1.76-.1-.17-.18-.38-.26-.62-.07-.24-.14-.49-.18-.73-.34-1.34-.94-2.48-1.8-3.41-.81-.78-1.74-1.4-2.79-1.85-1.05-.45-2.18-.68-3.37-.68h-2.09l-.04,4.69c0,.44.06.99.18,1.65.12.66.34,1.39.66,2.18.32.79.76,1.63,1.32,2.49.56.87,1.27,1.72,2.13,2.55.71.68,1.5,1.27,2.38,1.74.88.48,1.83.9,2.86,1.27,2.03.78,4.45,1.17,7.26,1.17,2.49,0,4.73-.29,6.71-.88,1-.32,1.93-.68,2.79-1.08.86-.4,1.64-.87,2.35-1.41,1.44-1.08,2.53-2.32,3.26-3.74.78-1.42,1.17-2.99,1.17-4.73,0-1.93-.38-3.58-1.14-4.95-.37-.66-.8-1.28-1.3-1.85Z"/>
+          <path fill="#1d2f56" d="M322.19,75.58c-.43-.01-.89-.02-1.39-.04-.5-.01-.98-.04-1.43-.07-.45-.04-.73-.07-.83-.09-.49-.1-.87-.29-1.14-.59-.17-.12-.31-.28-.4-.48-.1-.2-.2-.4-.29-.62-.15-.51-.22-1.14-.22-1.87v-22h1.47c.64,0,1.23-.12,1.8-.37.56-.24,1.05-.57,1.47-.99.42-.42.75-.9.99-1.47.24-.56.37-1.16.37-1.8v-2.38h-6.09v-4.73c0-1.03-.2-1.99-.59-2.9-.39-.9-.93-1.69-1.61-2.37-.68-.67-1.49-1.2-2.4-1.6-.92-.39-1.89-.59-2.92-.59h-2.13v12.17h-.59c-.64,0-1.24.12-1.81.37-.58.25-1.07.58-1.49.99-.42.42-.75.9-.99,1.47s-.37,1.15-.37,1.76v2.42h5.24v23.03c0,.95.06,1.84.17,2.66.11.82.3,1.56.57,2.22.49,1.32,1.17,2.41,2.05,3.26.46.42.94.83,1.48,1.16,1.59.96,3.17,1.19,5.63,1.19.83,0,1.63-.03,2.38-.31.76-.28,1.42-.69,1.98-1.23.56-.54,1.01-1.17,1.36-1.89.34-.72.51-1.51.51-2.37v-1.98c-.1.02-.36.03-.79.02Z"/>
+          <path fill="#1d2f56" d="M387.15,42.81c-1.76.02-3.34.48-4.75,1.38-1.41.89-2.47,2.07-3.21,3.54-.73-1.47-1.8-2.65-3.21-3.54-1.41-.89-2.99-1.35-4.75-1.38h-2.16v34.73c0,.73.13,1.42.4,2.05.27.64.64,1.19,1.12,1.67.48.48,1.03.85,1.67,1.12.64.27,1.32.4,2.05.4.68,0,1.34-.13,1.96-.4.62-.27,1.17-.64,1.65-1.12.48-.48.85-1.03,1.12-1.67.27-.64.4-1.32.4-2.05v-20.32c.32-.64.72-1.19,1.19-1.67.48-.48,1.02-.89,1.63-1.23.64-.39,1.36-.67,2.18-.84.82-.17,1.74-.26,2.77-.26.32,0,.63,0,.93.02.31.01.63.03.97.05l.18.04v-10.52h-2.16Z"/>
+          <path fill="#1d2f56" d="M360.01,72.57c-.56-.28-1.19-.46-1.89-.53-.7-.07-1.48-.02-2.35.15-.87.17-1.86.49-2.99.95-1.59.68-3.33,1.03-5.21,1.03-1.39,0-2.59-.2-3.59-.59-1.13-.42-2.05-.98-2.79-1.69-.81-.71-1.47-1.59-1.98-2.64-.24-.49-.45-1.01-.62-1.58-.09-.31-.15-.66-.22-.99h-.03c-.06-.26-.1-.52-.14-.79,0,0,0,0,0-.01h18.74c.73,0,1.43-.13,2.09-.4.66-.27,1.25-.64,1.76-1.1s.93-1.01,1.25-1.65c.32-.64.5-1.32.55-2.05v-1.87c-.15-1.83-.45-3.52-.92-5.06-.37-1.17-.82-2.25-1.36-3.25-.54-.99-1.17-1.9-1.91-2.73-.71-.83-1.5-1.56-2.38-2.18-.88-.62-1.86-1.18-2.93-1.67-2.05-.9-4.49-1.36-7.3-1.36s-5.31.49-7.48,1.47c-2.25,1-4.14,2.37-5.68,4.11-1.52,1.74-2.7,3.84-3.56,6.31-.44,1.22-.76,2.49-.97,3.81-.21,1.32-.31,2.71-.31,4.18v1.39c0,2.59.44,5.02,1.32,7.3.83,2.27,2.08,4.25,3.74,5.94.83.83,1.75,1.58,2.75,2.24,1,.66,2.1,1.23,3.3,1.72,2.32.98,4.99,1.47,7.99,1.47.93,0,1.83-.05,2.69-.15.87-.1,1.69-.24,2.48-.44.78-.2,1.53-.42,2.24-.68.71-.26,1.38-.56,2.02-.9.64-.32,1.22-.67,1.76-1.05.54-.38,1.05-.78,1.54-1.19.22-.2.48-.43.77-.71s.59-.57.88-.88c.29-.31.57-.61.83-.9.26-.29.46-.55.6-.77l-1.1-1.14c-.49-.46-1.02-.84-1.58-1.12ZM338.48,57.95h.03c.05-.27.08-.55.15-.8.13-.54.3-1.05.49-1.54.37-.98.86-1.82,1.47-2.53.32-.34.65-.65,1.01-.92s.74-.5,1.16-.7c.81-.39,1.8-.59,2.97-.59.56,0,1.11.04,1.63.13.53.09,1,.23,1.41.42.86.34,1.56.83,2.13,1.47.56.68.99,1.44,1.28,2.27.27.93.42,1.88.44,2.86v.84h-14.31c.08-.57.15-.92.15-.92Z"/>
+          <path fill="#1d2f56" d="M256.6,49.93c-.81-1.71-1.89-3.13-3.26-4.25-1.39-1.15-3.04-2-4.95-2.57-1.96-.56-4.03-.84-6.23-.84-2.52,0-4.78.33-6.78.99-.17.05-.33.1-.48.15-.15.05-.29.1-.44.15-.54.17-1.11.4-1.72.7-.51.27-1.09.61-1.72,1.01-.64.4-1.27.91-1.91,1.52-1.22,1.17-2.14,2.52-2.77,4.03-.62,1.52-.94,3.12-.94,4.8l-.04,2.79c.44.03.87.04,1.28.04.34,0,.7,0,1.06-.02.37-.01.67-.04.92-.09,1.49-.2,2.83-.71,4.02-1.56,1.19-.84,2.1-1.9,2.73-3.17.24-.68.55-1.25.92-1.7.37-.45.74-.81,1.12-1.08.38-.27.75-.46,1.1-.57.35-.11.64-.19.86-.24.34-.07.74-.12,1.19-.13.45-.01.85-.02,1.19-.02.93.03,1.75.17,2.48.44.72.27,1.3.68,1.74,1.25.93,1.08,1.39,2.51,1.39,4.29v3.01c-1.26-.31-4.43-.92-8.76-.58-.01,0-.03,0-.04,0-1.3.14-2.49.35-3.59.64-1.12.27-2.15.61-3.06,1.03-.92.42-1.77.91-2.55,1.47-.76.54-1.41,1.14-1.96,1.82-.55.67-1.03,1.4-1.45,2.18-.73,1.59-1.1,3.39-1.1,5.39,0,1.71.33,3.28.99,4.69.71,1.44,1.65,2.66,2.82,3.67.56.51,1.2.97,1.91,1.36.71.39,1.45.75,2.24,1.06,1.64.56,3.39.84,5.24.84,2.27,0,4.2-.42,5.79-1.25.78-.42,1.49-.95,2.13-1.61.64-.66,1.22-1.27,1.76-1.83.73,1.42,1.8,2.57,3.21,3.45,1.41.88,2.96,1.32,4.68,1.32h2.13v-26.59c0-1.15-.1-2.22-.29-3.21-.2-.99-.48-1.91-.84-2.77ZM247.36,65.13v5.59c-.15.24-.31.48-.48.71-.17.23-.37.47-.59.71-.22.22-.46.43-.71.62-.26.2-.54.38-.86.55-.64.37-1.3.65-1.98.84-.39.12-.79.21-1.19.26-.4.05-.83.07-1.26.07-1.59,0-2.84-.42-3.74-1.25-.9-.86-1.36-1.92-1.36-3.19,0-.88.16-1.67.48-2.38.34-.76.82-1.39,1.43-1.91.66-.54,1.48-.95,2.46-1.25,1.03-.29,1.87-.37,3.56-.44,2.03,0,3.44.18,4.25.33v.72h0Z"/>
+        </g>
+      </g>
+      <g>
+        <path fill="url(#Degradado_sin_nombre_4)" d="M17.88,73.62v10.82c0,2.16,1.16,4.15,3.05,5.22l37.24,21.02c1.83,1.03,4.06,1.03,5.89,0l37.24-21.02c1.88-1.06,3.05-3.05,3.05-5.22v-10.82c0-4.54-4.86-7.43-8.85-5.26l-31.51,17.17c-1.79.97-3.95.97-5.73,0l-31.51-17.17c-3.99-2.17-8.85.71-8.85,5.26Z"/>
+        <path fill="#1d2f56" d="M58.01.77L3.04,31.83c-4.08,2.31-4.05,8.2.06,10.46l54.97,30.21c1.78.98,3.94.99,5.73.02l44.76-24.17c3.99-2.15,8.83.73,8.83,5.27v16.69c0,4.57,4.91,7.46,8.9,5.23h0c1.9-1.06,3.08-3.06,3.08-5.23v-29.68c0-2.18-1.18-4.18-3.08-5.24L63.87.75c-1.82-1.01-4.04-1-5.85.02Z"/>
+      </g>
+    </g>
+  </g>
+</svg></a>
+    <div><h4>Writing · paso a paso</h4><ul id="navSteps"></ul></div>
+    <div class="prog"><span id="progTxt">Pasos completados: 0 de 9</span><div class="bar2"><i id="progBar"></i></div><span id="progPts">Puntos: 0</span><span id="progEnv">Emails enviados: 0 de 6</span></div>
+  </aside>
+
+  <main class="wrap" id="main">
+    <div class="topbar"><span class="kicker" id="stepKick"></span><div class="pbar" aria-hidden="true"><i id="pbar"></i></div></div>
+
+    <!-- 0 · INICIO -->
+    <section class="paso" data-step="0" data-name="Empieza aquí" data-short="Inicio">
+  <div class="hero">
+    <div class="kicker">Writing · el email del examen</div>
+    <h1>Cómo responder<span>un email</span></h1>
+    <p class="lead">En el writing del examen te dan un email y tienes que contestarlo como si fueras otra persona. Aquí aprenderás un método para hacerlo bien siempre y después practicarás con seis emails. Al enviarlos, le llegan a tu profesora.</p>
+  </div>
+
+  <div class="facts" aria-label="Lo que pide el examen">
+    <div class="fact c1"><b>1</b><span>email que lees y contestas</span></div>
+    <div class="fact c2"><b>25</b><span>minutos para hacerlo todo</span></div>
+    <div class="fact c3"><b>150</b><span>palabras como mínimo</span></div>
+    <div class="fact c4"><b>4</b><span>puntos que suele haber que contestar</span></div>
+  </div>
+
+
+      <div class="howto">
+        <div class="hw c1"><b>1</b><span>Aprendes cada parte del email con un ejemplo</span></div>
+        <div class="hw c2"><b>2</b><span>La practicas justo después, con pistas si fallas</span></div>
+        <div class="hw c3"><b>3</b><span>Escribes un email con ayuda</span></div>
+        <div class="hw c4"><b>4</b><span>Haces un simulacro como el del examen</span></div>
+      </div>
+      <div class="box say"><div class="lbl">Puntos</div><p>En las prácticas, cada respuesta bien a la primera vale <strong>1 punto</strong> y bien al segundo intento, <strong>medio punto</strong>. Los emails que escribas le llegan a tu profesora. Tu progreso se guarda en este navegador.</p></div>
+    </section>
+
+    <!-- 1 -->
+    <section class="paso" data-step="1" data-name="Qué te piden" data-short="Qué te piden">
+<section id="examen" style="--acc: var(--navy)">
+    <div class="sh"><div class="n">1</div><div><div class="kicker">El examen</div><h2>Qué te piden</h2></div></div>
+    <p>La tarea casi siempre es igual: lees un email que alguien ha escrito y lo contestas <strong>en el papel de la persona que te indican</strong> (la recepcionista de un hotel, el encargado de una tienda, una compañera de trabajo…). Te puntúan cuatro cosas:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>QUÉ MIRAN</th><th>QUÉ SIGNIFICA PARA TI</th></tr></thead>
+      <tbody>
+        <tr><td>Hacer todo lo que piden</td><td>Cada cosa que piden las <em>Directions</em> (y cada pregunta del email, si las hay) necesita su respuesta.</td></tr>
+        <tr><td>Organización</td><td>Saludo, párrafos claros (uno por tema) y despedida. Que se lea fácil.</td></tr>
+        <tr><td>Tono adecuado</td><td>Si te escribe un cliente o un jefe, contestas en formal. Si es un amigo, en informal.</td></tr>
+        <tr><td>Gramática y vocabulario</td><td>Usar distintos tiempos verbales, conectores y vocabulario del tema, con pocos errores.</td></tr>
+      </tbody>
+    </table></div>
+    <p>La instrucción empieza por <strong>Directions</strong> y es lo más importante de todo: te dice <strong>quién eres</strong>, si es <strong>formal</strong> y <strong>qué tienes que hacer</strong>. En el examen hay dos tipos de tarea:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>TIPO</th><th>QUÉ TE PIDEN · EJEMPLO DEL EXAMEN</th></tr></thead>
+      <tbody>
+        <tr><td>Pedir información</td><td>Eres un cliente interesado en algo. Tienes que <strong>hacer preguntas</strong> (normalmente, al menos tres).<br><em style="color:var(--soft)">Respond to the email as Mr. Karstens, who is interested in buying the apartment. Make at least three requests for information.</em></td></tr>
+        <tr><td>Responder como empresa</td><td>Eres el responsable de una empresa y contestas a un cliente: <strong>disculparte, dar una solución, ofrecer ayuda</strong> o contestar sus preguntas.<br><em style="color:var(--soft)">…write a formal reply as if you are Sarah Collins, the customer service manager at CityRentals… Your response should apologize for the issue, provide a solution, and offer assistance if needed.</em></td></tr>
+      </tbody>
+    </table></div>
+    <p>El email que te dan lleva siempre la misma cabecera: <strong>From</strong> (quién lo envía), <strong>To</strong> (a quién), <strong>Subject</strong> (el asunto) y <strong>Sent</strong> (cuándo).</p>
+    <div class="box tip"><div class="lbl">Fíjate</div><p>Subraya en las <em>Directions</em> los verbos de lo que tienes que hacer: <strong>make three requests, apologize, provide a solution, offer assistance, answer the questions</strong>… Cada uno será un párrafo de tu email. Hacer todo lo que piden vale más que escribir frases bonitas.</p></div>
+  </section>
+      <div class="practice"><div class="plabel">Practica</div>
+        <p class="task"><span style="color:var(--yellow)">Ejemplo 1 · </span>Directions: Respond to the email as Mr. Karstens, who is interested in buying the apartment. Make at least three requests for information.</p>
+        <p class="task"><span style="color:var(--yellow)">Ejemplo 2 · </span>Directions: Read the following email and write a formal reply as if you are Sarah Collins, the customer service manager at CityRentals, a car rental company. Your response should apologize for the issue, provide a solution, and offer assistance if needed.</p>
+        <div data-ex="p1"></div></div>
+    </section>
+
+    <!-- 2 -->
+    <section class="paso" data-step="2" data-name="El método en 4 pasos" data-short="El método">
+<section id="metodo" style="--acc: var(--orange)">
+    <div class="sh"><div class="n">2</div><div><div class="kicker">25 minutos bien repartidos</div><h2>El método en 4 pasos</h2></div></div>
+    <div class="steps">
+      <div class="step"><div class="t">2 MINUTOS</div><h3>1 · Lee y subraya</h3><p>Lee las <em>Directions</em> y el email dos veces. Subraya <strong>todo lo que tienes que hacer</strong> (preguntas que contestar, peticiones que hacer, disculparte…) y numéralo: 1, 2, 3, 4. Mira quién eres tú.</p></div>
+      <div class="step"><div class="t">4 MINUTOS</div><h3>2 · Planifica</h3><p>Al lado de cada número, apunta tu respuesta en dos o tres palabras: <em>1 → 85 € con desayuno</em>. Decide el saludo y la despedida.</p></div>
+      <div class="step"><div class="t">15 MINUTOS</div><h3>3 · Escribe</h3><p>Un párrafo por cada punto. Cada párrafo: respuesta + un detalle o una razón. Así llegas a las 150 palabras sin esfuerzo.</p></div>
+      <div class="step"><div class="t">4 MINUTOS</div><h3>4 · Revisa</h3><p>Comprueba que has hecho los puntos 1, 2, 3 y 4. Cuenta las palabras. Repasa la -s de he/she, los pasados y las mayúsculas.</p></div>
+    </div>
+    <div class="box say"><div class="lbl">La cuenta de las palabras</div><p>Apertura (20) + 4 párrafos de 30 palabras (120) + cierre (15) = <strong>unas 155 palabras</strong>. Si cada párrafo tiene una respuesta y una explicación, el número sale solo.</p></div>
+    <div class="box warn"><div class="lbl">Cuidado</div><p>No copies frases enteras del email que te escriben. Usa sus ideas, pero con tus palabras: «Could you tell me the price?» → «The price of a double room is…».</p></div>
+  </section>
+      <div class="practice"><div class="plabel">Practica el paso 1: subraya</div><div id="subraya"></div></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="paso" data-step="3" data-name="La estructura" data-short="La estructura">
+<section id="estructura" style="--acc: var(--yellow)">
+    <div class="sh"><div class="n" style="color:#B58A1E">3</div><div><div class="kicker">Las piezas de un email</div><h2>La estructura</h2></div></div>
+    <p>Todos los emails del examen se construyen con las mismas cinco piezas. Apréndetelas y ya tienes la mitad hecha.</p>
+    <div class="anat">
+      <div class="row"><div class="tag c1">1 · Saludo<small>Dear + Mr/Ms + apellido</small></div><div class="txt">Dear Ms Wilson,</div></div>
+      <div class="row"><div class="tag c2">2 · Apertura<small>agradece y di de qué escribes</small></div><div class="txt">Thank you for your email about our swimming lessons. I am happy to answer your questions.</div></div>
+      <div class="row"><div class="tag c3">3 · Cuerpo<small>un párrafo por cada cosa que piden</small></div><div class="txt">Párrafo 1 → pregunta 1<br>Párrafo 2 → pregunta 2<br>Párrafo 3 → pregunta 3 (y 4 si hay)</div></div>
+      <div class="row"><div class="tag c4">4 · Cierre<small>ofrece ayuda</small></div><div class="txt">If you have any other questions, please do not hesitate to contact me.</div></div>
+      <div class="row"><div class="tag" style="background:var(--cream)">5 · Despedida<small>+ nombre y cargo</small></div><div class="txt">Kind regards,<br>Daniel Ruiz<br>Sports Coordinator, Elche Sports Centre</div></div>
+    </div>
+    <h3>¿Formal o informal?</h3>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>FORMAL (cliente, jefe, empresa)</th><th>INFORMAL (amigo, familia)</th></tr></thead>
+      <tbody>
+        <tr><td>Saludo</td><td>Dear Mr Hart, / Dear Ms Wilson,</td><td>Hi Jenny, / Dear Jenny,</td></tr>
+        <tr><td>Empezar</td><td>Thank you for your email.</td><td>Thanks for your message! It was great to hear from you.</td></tr>
+        <tr><td>Formas cortas</td><td>Mejor sin ellas: I am, we will, do not</td><td>Sí: I'm, we'll, don't</td></tr>
+        <tr><td>Cerrar</td><td>Please do not hesitate to contact me.</td><td>Can't wait to see you! / Write back soon.</td></tr>
+        <tr><td>Despedida</td><td>Kind regards, / Best regards,</td><td>Love, / See you soon, / Take care,</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box tip"><div class="lbl">Truco</div><p>Si no sabes si es Mr o Ms, o no conoces el apellido, escribe <strong>Dear Sir or Madam,</strong>. Y nunca uses el nombre de pila con Mr: ✗ Dear Mr Kevin → ✓ Dear Mr Hart.</p></div>
+  </section>
+      <div class="practice"><div class="plabel">Practica</div><div data-ex="ff"></div></div>
+      <div class="practice"><div class="plabel">Juego · Ordena el email</div>
+        <div class="gh"><div class="tabs" id="tabsOrd"></div><span class="score" id="ordSc" hidden></span></div>
+        <p>Los trozos del email están desordenados. Usa las flechas ▲ ▼ (o arrástralos) para ponerlos en orden y pulsa <strong>Comprobar</strong>.</p>
+        <ol class="ord" id="ordList"></ol>
+        <div class="bar start"><button class="btn" type="button" id="ordCheck">Comprobar</button><button class="btn ghost" type="button" id="ordSol">Ver solución</button><span class="msgres" id="ordRes" aria-live="polite"></span></div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="paso" data-step="4" data-name="Frases útiles" data-short="Frases útiles">
+<section id="frases" style="--acc: var(--blue)">
+    <div class="sh"><div class="n">4</div><div><div class="kicker">Para copiar en tu cuaderno</div><h2>Frases útiles</h2></div></div>
+    <p>Estas frases sirven para casi cualquier email formal. Elige dos o tres de cada grupo y apréndetelas de memoria.</p>
+    <h3>Empezar</h3>
+    <div class="tbl"><table><thead><tr><th>INGLÉS</th><th>ESPAÑOL</th></tr></thead><tbody>
+      <tr><td>Thank you for your email about…</td><td>Gracias por su email sobre…</td></tr>
+      <tr><td>I am writing to answer your questions about…</td><td>Le escribo para responder a sus preguntas sobre…</td></tr>
+      <tr><td>I am happy to give you the information you asked for.</td><td>Me alegra darle la información que pidió.</td></tr>
+    </tbody></table></div>
+    <h3>Disculparse (si hay una queja)</h3>
+    <div class="tbl"><table><thead><tr><th>INGLÉS</th><th>ESPAÑOL</th></tr></thead><tbody>
+      <tr><td>I am very sorry about the problem with…</td><td>Siento mucho el problema con…</td></tr>
+      <tr><td>Please accept our apologies for…</td><td>Le pedimos disculpas por…</td></tr>
+      <tr><td>You are right, and we will solve it as soon as possible.</td><td>Tiene razón, y lo solucionaremos lo antes posible.</td></tr>
+    </tbody></table></div>
+    <h3>Explicar y solucionar (si hay una queja)</h3>
+    <div class="tbl"><table><thead><tr><th>INGLÉS</th><th>ESPAÑOL</th></tr></thead><tbody>
+      <tr><td>This happened because…</td><td>Esto ocurrió porque…</td></tr>
+      <tr><td>To solve the problem, we will…</td><td>Para solucionar el problema, vamos a…</td></tr>
+      <tr><td>We will give you a refund / a discount of…</td><td>Le devolveremos el dinero / le haremos un descuento de…</td></tr>
+      <tr><td>As an apology, we would like to offer you…</td><td>Como disculpa, nos gustaría ofrecerle…</td></tr>
+      <tr><td>I can assure you that this will not happen again.</td><td>Le aseguro que no volverá a pasar.</td></tr>
+    </tbody></table></div>
+    <h3>Pedir información (si eres el cliente)</h3>
+    <div class="tbl"><table><thead><tr><th>INGLÉS</th><th>ESPAÑOL</th></tr></thead><tbody>
+      <tr><td>I am very interested in…</td><td>Estoy muy interesado/a en…</td></tr>
+      <tr><td>Could you tell me…?</td><td>¿Podría decirme…?</td></tr>
+      <tr><td>I would like to know if / how much / when…</td><td>Me gustaría saber si / cuánto / cuándo…</td></tr>
+      <tr><td>I was wondering if…</td><td>Me preguntaba si…</td></tr>
+      <tr><td>Is it possible to…? / Would it be possible to…?</td><td>¿Es posible…? / ¿Sería posible…?</td></tr>
+      <tr><td>Could you send me more information about…?</td><td>¿Podría enviarme más información sobre…?</td></tr>
+      <tr><td>Thank you in advance for your help.</td><td>Gracias de antemano por su ayuda.</td></tr>
+    </tbody></table></div>
+    <div class="box warn"><div class="lbl">Cuidado con el orden</div><p>Después de <em>I would like to know</em> o <em>Could you tell me</em>, la frase va en orden normal: ✓ I would like to know how much <strong>it costs</strong>. ✗ I would like to know how much does it cost.</p></div>
+    <h3>Dar información y responder</h3>
+    <div class="tbl"><table><thead><tr><th>INGLÉS</th><th>ESPAÑOL</th></tr></thead><tbody>
+      <tr><td>Regarding your question about…, …</td><td>En cuanto a su pregunta sobre…, …</td></tr>
+      <tr><td>The price is… / It costs…</td><td>El precio es… / Cuesta…</td></tr>
+      <tr><td>You can… / You will need to…</td><td>Puede… / Tendrá que…</td></tr>
+      <tr><td>I am afraid that… is not possible, but…</td><td>Me temo que… no es posible, pero…</td></tr>
+      <tr><td>As you asked, I have…</td><td>Como pidió, he…</td></tr>
+    </tbody></table></div>
+    <h3>Ofrecer y proponer</h3>
+    <div class="tbl"><table><thead><tr><th>INGLÉS</th><th>ESPAÑOL</th></tr></thead><tbody>
+      <tr><td>We would be happy to…</td><td>Estaremos encantados de…</td></tr>
+      <tr><td>Would you like me to…?</td><td>¿Quiere que…?</td></tr>
+      <tr><td>I suggest… / I recommend…</td><td>Le sugiero… / Le recomiendo…</td></tr>
+      <tr><td>Could you let me know…?</td><td>¿Podría decirme…?</td></tr>
+    </tbody></table></div>
+    <h3>Conectores: unen tus ideas</h3>
+    <div class="tbl"><table><thead><tr><th>PARA…</th><th>CONECTORES</th><th>EJEMPLO</th></tr></thead><tbody>
+      <tr><td>Añadir</td><td>also, and, in addition</td><td>In addition, breakfast is included.</td></tr>
+      <tr><td>Contrastar</td><td>but, however, although</td><td>Parking is free. However, there are only ten spaces.</td></tr>
+      <tr><td>Dar una razón</td><td>because, as</td><td>We cannot change it because the room is full.</td></tr>
+      <tr><td>Consecuencia</td><td>so, that means</td><td>Your flight arrives late, so we will keep your room.</td></tr>
+      <tr><td>Ordenar</td><td>first, then, finally</td><td>Finally, you asked about the timetable.</td></tr>
+    </tbody></table></div>
+    <h3>Cerrar</h3>
+    <div class="tbl"><table><thead><tr><th>INGLÉS</th><th>ESPAÑOL</th></tr></thead><tbody>
+      <tr><td>If you have any other questions, please do not hesitate to contact me.</td><td>Si tiene cualquier otra pregunta, no dude en contactarme.</td></tr>
+      <tr><td>I look forward to hearing from you.</td><td>Quedo a la espera de su respuesta.</td></tr>
+      <tr><td>I hope this information is useful.</td><td>Espero que esta información le sea útil.</td></tr>
+    </tbody></table></div>
+  </section>
+      <div class="practice"><div class="plabel">Juego · Termina la frase</div><div data-ex="frases"></div></div>
+    </section>
+
+    <!-- 5 -->
+    <section class="paso" data-step="5" data-name="Errores típicos" data-short="Errores típicos">
+<section id="errores" style="--acc: var(--orange)">
+    <div class="sh"><div class="n">5</div><div><div class="kicker">Lo que más se repite</div><h2>Errores típicos</h2></div></div>
+    <div class="errs">
+      <div class="err"><span class="no">Dear Mr Kevin,</span><span class="si">Dear Mr Hart,</span><span class="why">Mr y Ms van con el apellido, nunca con el nombre.</span></div>
+      <div class="err"><span class="no">I write you for…</span><span class="si">I am writing to you about…</span><span class="why">En los emails se usa el presente continuo: I am writing.</span></div>
+      <div class="err"><span class="no">Waiting your answer.</span><span class="si">I look forward to hearing from you.</span><span class="why">Es una traducción literal del español. Aprende la frase entera.</span></div>
+      <div class="err"><span class="no">Can you explain me…?</span><span class="si">Can you explain to me…? / Can you tell me…?</span><span class="why">Explain necesita «to» antes de la persona.</span></div>
+      <div class="err"><span class="no">some informations</span><span class="si">some information</span><span class="why">Information, advice y furniture no tienen plural.</span></div>
+      <div class="err"><span class="no">See you the next week.</span><span class="si">See you next week.</span><span class="why">Next week, last year, this month: sin «the».</span></div>
+      <div class="err"><span class="no">Un solo bloque de texto sin párrafos.</span><span class="si">Un párrafo por cada pregunta.</span><span class="why">El examinador busca cada respuesta. Ayúdale a encontrarla.</span></div>
+      <div class="err"><span class="no">Contestar tres de las cuatro preguntas.</span><span class="si">Contestar todas, aunque sea con una frase.</span><span class="why">Es el error que más puntos cuesta. Repasa la lista al final.</span></div>
+    </div>
+  </section>
+      <div class="practice"><div class="plabel">Juego · Encuentra los errores</div>
+        <div class="gh"><div class="tabs" id="tabsHunt"></div><span class="score" id="huntSc" hidden></span></div>
+        <div id="caza"></div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="paso" data-step="6" data-name="Modelo comentado" data-short="El modelo">
+<section id="modelo" style="--acc: var(--navy)">
+    <div class="sh"><div class="n">6</div><div><div class="kicker">Paso a paso</div><h2>Modelo comentado</h2></div></div>
+    <p class="task">Read the following email and write a reply as if you are Daniel Ruiz, the sports coordinator of Elche Sports Centre. Make sure you answer all the questions. (Min. 150 words)</p>
+    <div class="mail">
+      <div class="hdr"><span><b>From:</b> Sarah Wilson</span><span><b>To:</b> Daniel Ruiz, Elche Sports Centre</span><span><b>Subject:</b> Swimming lessons for my son</span></div>
+      <p>Dear Mr Ruiz,</p>
+      <p>My son Leo is eight years old and he would like to learn to swim. <strong>(1)</strong> What days and times are the lessons for children? <strong>(2)</strong> How much do they cost? <strong>(3)</strong> Does he need to bring any special equipment?</p>
+      <p><strong>(4)</strong> Finally, is it possible to watch one lesson before we decide?</p>
+      <p>Thank you in advance,<br>Sarah Wilson</p>
+    </div>
+    <div class="box say"><div class="lbl">Paso 1 y 2: subrayar y planificar</div><p>(1) martes y jueves, 17:30 · (2) 40 € al mes · (3) bañador, gorro, gafas · (4) sí, este jueves</p></div>
+    <div class="anat">
+      <div class="row"><div class="tag c1">Saludo</div><div class="txt">Dear Ms Wilson,</div></div>
+      <div class="row"><div class="tag c2">Apertura</div><div class="txt"><span class="f">Thank you for your email about</span> our swimming lessons. <span class="f">I am happy to answer your questions.</span></div></div>
+      <div class="row"><div class="tag c3">Pregunta 1<small>días y horas</small></div><div class="txt">Our lessons for children aged seven to ten are on Tuesdays and Thursdays from 5:30 to 6:30 p.m. The groups are small, <span class="k">so</span> every child gets a lot of attention from the instructor.</div></div>
+      <div class="row"><div class="tag c3">Pregunta 2<small>precio</small></div><div class="txt"><span class="f">Regarding the price,</span> the course <span class="f">costs</span> €40 a month for two lessons a week. <span class="k">In addition,</span> if you pay for three months, you get a 10% discount.</div></div>
+      <div class="row"><div class="tag c3">Pregunta 3<small>material</small></div><div class="txt">Leo will need a swimsuit, a swimming cap and goggles. We provide the boards and the other equipment, <span class="k">so</span> he does not need to buy anything else.</div></div>
+      <div class="row"><div class="tag c3">Pregunta 4<small>ver una clase</small></div><div class="txt">Of course you can watch a lesson. <span class="f">I suggest</span> coming this Thursday at 5:30. <span class="f">Could you let me know</span> if that day is good for you?</div></div>
+      <div class="row"><div class="tag c4">Cierre</div><div class="txt"><span class="f">If you have any other questions, please do not hesitate to contact me.</span></div></div>
+      <div class="row"><div class="tag" style="background:var(--cream)">Despedida</div><div class="txt">Kind regards,<br>Daniel Ruiz<br>Sports Coordinator, Elche Sports Centre</div></div>
+    </div>
+    <div class="legend"><span><span class="f">frase útil</span> del apartado 4</span><span><span class="k">conector</span></span><span>154 palabras</span></div>
+    <div class="box tip"><div class="lbl">Por qué funciona</div><ul>
+      <li>Contesta las <strong>cuatro</strong> preguntas, cada una en su párrafo y en el mismo orden del email.</li>
+      <li>Cada párrafo tiene la respuesta y <strong>un detalle más</strong> (grupos pequeños, descuento, material incluido…).</li>
+      <li>Usa distintos tiempos: presente, futuro con will, una pregunta educada con Could you…?</li>
+      <li>Es formal de principio a fin: Dear Ms Wilson…, Kind regards.</li>
+    </ul></div>
+  </section>
+      <div class="practice"><div class="plabel">Practica</div><div data-ex="partes"></div></div>
+    </section>
+
+    <!-- 7 -->
+    <section class="paso" data-step="7" data-name="Escribe con ayuda" data-short="Escribe con ayuda">
+      <div class="sh" style="--acc: var(--orange)"><div class="n">7</div><div><div class="kicker">Modo guiado</div><h2>Escribe con ayuda</h2></div></div>
+      <p>Ahora te toca a ti. Elige un email y contéstalo. Tendrás <strong>una caja para cada parte</strong> (saludo, apertura, una por pregunta, cierre y despedida) y frases útiles para insertar. Antes de enviarlo, pulsa <strong>Revisar mi email</strong>: si algo falla, te lo dice para que lo corrijas.</p>
+      <div class="host" data-modo="guiado"></div>
+    </section>
+
+    <!-- 8 -->
+    <section class="paso" data-step="8" data-name="Simulacro de examen" data-short="Simulacro">
+      <div class="sh" style="--acc: var(--navy)"><div class="n">8</div><div><div class="kicker">Como el día del examen</div><h2>Simulacro de examen</h2></div></div>
+      <p>Un cuadro en blanco, sin frases de ayuda y con <strong>25 minutos</strong>. El tiempo empieza cuando escribas la primera letra. Al entregar, verás una <strong>nota orientativa</strong> y el modelo para comparar, y tu profesora recibirá el email para corregirlo.</p>
+      <div class="host" data-modo="examen"></div>
+    </section>
+
+    <nav class="stepnav" aria-label="Pasos"><button class="btn ghost" type="button" id="prev">← Anterior</button><span id="navInfo"></span><button class="btn" type="button" id="next">Siguiente →</button></nav>
+    <footer class="foot"><span>Writing · responder un email · MasterPol · versión 16 nov · envío activo</span><span>Versión por pasos (prueba)</span></footer>
+  </main>
+</div>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN
+   ========================================================= */
+const ENVIO_URL = "https://script.google.com/macros/s/AKfycbxMv6a9EQ2F54HiUnk_Rx20lodWZ98dRiEO1LL9LfVdphyNhR2WjcIlzsD4A80T9yk7Vg/exec";        // URL /exec de Google Apps Script (la misma que el test de nivel)
+const MIN_PALABRAS = 150;
+const MINUTOS = 25;
+const COLORES = [["#1B2A4A", "#FFFFFF"], ["#EE7B22", "#1B2A4A"], ["#F2C14E", "#1B2A4A"], ["#3C6FB4", "#FFFFFF"], ["#1B2A4A", "#FFFFFF"], ["#EE7B22", "#1B2A4A"], ["#F2C14E", "#1B2A4A"], ["#3C6FB4", "#FFFFFF"], ["#1B2A4A", "#FFFFFF"]];
+const TIPO_TXT = { responder: "Contestar preguntas", pedir: "Pedir información", queja: "Responder a una queja" };
+
+const TAREAS = [
+  { id: "hotel", tipo: "responder", sent: "February 20", directions: "Read the following email and write a formal reply as if you are Clara Gómez, the receptionist at Hotel Palmeral in Elche. Answer all of Mr Davies's questions.", apellido: "Davies", titulo: "El hotel", tono: "Formal",
+    rol: "Clara Gómez, the receptionist at Hotel Palmeral in Elche",
+    de: "Mark Davies", para: "Clara Gómez, Hotel Palmeral", asunto: "Booking for March",
+    cuerpo: ["Dear Ms Gómez,", "My wife and I would like to stay at your hotel from 14 to 17 March. Could you tell me the price of a double room per night, with breakfast?", "We are going to rent a car at Alicante airport. Is there a car park at the hotel? Also, what is the best way to get from the airport to the hotel?", "Our flight arrives at 10:30 p.m., so we will arrive at about 11:30 p.m. Is that a problem?", "Best regards,<br>Mark Davies"],
+    firma: "Clara Gómez",
+    puntos: ["Price of a double room with breakfast", "Car park at the hotel", "How to get from the airport", "Arriving at 11:30 p.m."],
+    modelo: "<p>Dear Mr Davies,</p><p><span class='f'>Thank you for your email</span> and for choosing Hotel Palmeral. <span class='f'>I am happy to give you the information you asked for.</span></p><p>A double room from 14 to 17 March costs €95 per night, and breakfast is included. Breakfast is served from 7 to 10:30 a.m. in our garden restaurant.</p><p><span class='f'>Regarding the car,</span> we have a private car park under the hotel. It costs €12 a day, <span class='k'>but</span> I recommend booking a space now <span class='k'>because</span> it is often full in spring.</p><p>From the airport, the easiest way is to take the A-7 motorway towards Murcia. The journey takes about twenty minutes, and I can send you a map if you like.</p><p>Arriving late is not a problem at all. Our reception is open 24 hours, <span class='k'>so</span> my colleague will be there to welcome you.</p><p><span class='f'>If you have any other questions, please do not hesitate to contact me.</span></p><p>Kind regards,<br>Clara Gómez<br>Receptionist, Hotel Palmeral</p>" },
+  { id: "gym", tipo: "queja", sent: "June 3", directions: "Read the following email and write a formal reply as if you are Javier Ortiz, the manager of FitPlus gym. Your response should apologize for the problems, answer Ms Wilson's questions and offer a solution.", apellido: "Wilson", titulo: "La queja del gimnasio", tono: "Formal",
+    rol: "Javier Ortiz, the manager of FitPlus gym",
+    de: "Emma Wilson", para: "Javier Ortiz, FitPlus", asunto: "Broken machines",
+    cuerpo: ["Dear Mr Ortiz,", "I have been a member of FitPlus for three years, but I am not happy with the service at the moment. Two of the three running machines have been broken for two weeks. When are you going to repair them?", "Also, the water in the women's showers is always cold in the evening.", "I pay €45 a month and I cannot use the gym properly. I think I should get some money back. Finally, I am going on holiday in August. Can I stop paying my membership that month?", "Regards,<br>Emma Wilson"],
+    firma: "Javier Ortiz",
+    puntos: ["Apologise and say when the machines will be repaired", "The cold showers", "Money back", "Stopping the membership in August"],
+    modelo: "<p>Dear Ms Wilson,</p><p><span class='f'>Thank you for your email</span>, and <span class='f'>I am very sorry about the problems</span> you have had at FitPlus. You are right, and this is not the service we want to offer our members.</p><p>The new parts for the running machines arrived yesterday. The technician is coming on Friday morning, <span class='k'>so</span> all the machines will work again by the weekend.</p><p>We have also checked the showers. The problem was the hot water system, and a plumber repaired it this morning. From today, the water will be hot all day.</p><p>As an apology, we will not charge you for this month. You will see the refund of €45 on your card in the next few days.</p><p><span class='f'>Regarding August,</span> you can freeze your membership for one month at no cost. You only need to fill in a form at reception before 31 July.</p><p>Thank you for being a member for so long. <span class='f'>Please do not hesitate to contact me</span> if you have any other problems.</p><p>Kind regards,<br>Javier Ortiz<br>Manager, FitPlus</p>" },
+  { id: "school", tipo: "responder", sent: "September 8", directions: "Read the following email and write a formal reply as if you are Lucía Pérez, the coordinator of Elche Language School. Answer all of Mr Baker's questions.", apellido: "Baker", titulo: "La academia de idiomas", tono: "Formal",
+    rol: "Lucía Pérez, the coordinator of Elche Language School",
+    de: "Tom Baker", para: "Lucía Pérez, Elche Language School", asunto: "Spanish classes",
+    cuerpo: ["Dear Ms Pérez,", "My wife and I moved to Elche last month and we want to learn Spanish. I can speak a little, but my wife is a complete beginner. How do you decide which class is right for each student?", "We both work until six o'clock. Do you have classes in the evening? And how much does a course cost?", "Finally, could we try a class before we pay for the course?", "Thank you,<br>Tom Baker"],
+    firma: "Lucía Pérez",
+    puntos: ["How you decide the level", "Evening classes", "Price of the course", "Trying a class first"],
+    modelo: "<p>Dear Mr Baker,</p><p><span class='f'>Thank you for your email</span>, and welcome to Elche! We would be happy to help you and your wife learn Spanish.</p><p>Before the course starts, every new student does a short level test. It has a written part and a conversation with a teacher, and it takes about thirty minutes. <span class='k'>That means</span> you and your wife will be in the right group, <span class='k'>even if</span> your levels are different.</p><p>We have evening classes on Mondays and Wednesdays from 7 to 8:30 p.m., <span class='k'>so</span> you will have time to come after work.</p><p>The course costs €120 a month per person. <span class='k'>However,</span> couples get a 15% discount, <span class='k'>so</span> you would pay €204 a month in total.</p><p>Of course you can try a class first. <span class='f'>Would you like</span> to come next Monday? You can do the level test at 6:30 and then stay for the class.</p><p><span class='f'>I look forward to hearing from you.</span></p><p>Kind regards,<br>Lucía Pérez<br>Coordinator, Elche Language School</p>" },
+  { id: "interview", tipo: "responder", sent: "October 14", directions: "Read the following email and write a formal reply as if you are Pablo Navarro, the HR assistant at Levante Logistics. Answer all of Ms Green's questions.", apellido: "Green", titulo: "La entrevista de trabajo", tono: "Formal",
+    rol: "Pablo Navarro, the HR assistant at Levante Logistics",
+    de: "Rachel Green", para: "Pablo Navarro, Levante Logistics", asunto: "Job interview on Thursday",
+    cuerpo: ["Dear Mr Navarro,", "Thank you very much for inviting me to an interview for the position of warehouse supervisor. Unfortunately, I have a medical appointment on Thursday at 10 a.m. Would it be possible to change the day or the time?", "Could you also tell me which documents I need to bring, and how long the interview will take?", "Finally, I will come by car. Is there anywhere to park near your office?", "Yours sincerely,<br>Rachel Green"],
+    firma: "Pablo Navarro",
+    puntos: ["A new day or time", "Documents to bring", "How long the interview takes", "Parking"],
+    modelo: "<p>Dear Ms Green,</p><p><span class='f'>Thank you for your email.</span> We are very pleased that you are interested in the position.</p><p>There is no problem with changing the interview. <span class='f'>I suggest</span> Friday at 11 a.m. or Monday at 9:30 a.m. <span class='f'>Could you let me know</span> which option is better for you?</p><p><span class='f'>Regarding the documents,</span> please bring your ID card, a printed copy of your CV and your driving licence. <span class='k'>In addition,</span> if you have any certificates of your previous jobs, they would be very useful.</p><p>The interview will take about forty-five minutes. First, you will talk to the warehouse manager and me. <span class='k'>Then</span>, we will show you the warehouse.</p><p>You can park in our car park for visitors, at the main entrance. Just give your name to the security guard and he will open the gate for you.</p><p><span class='f'>I look forward to meeting you.</span></p><p>Kind regards,<br>Pablo Navarro<br>HR Assistant, Levante Logistics</p>" },
+  { id: "visit", tipo: "responder", sent: "May 6", directions: "Read the following email and write a reply as if you are Ana López, the office administrator at the Elche office. Answer all of Steven's requests.", apellido: "Clark", titulo: "La visita del jefe", tono: "Formal",
+    rol: "Ana López, the office administrator at the Elche office",
+    de: "Steven Clark (UK office)", para: "Ana López, Elche office", asunto: "Our visit next week",
+    cuerpo: ["Dear Ana,", "As you know, three colleagues and I are visiting the Elche office next week. We will need a meeting room for six people on Tuesday and Wednesday. Can you book one for us?", "On Wednesday evening we would like to have dinner with the Spanish team. Can you recommend a good restaurant and book a table?", "We are staying at the Hotel Centro. How can we get from the hotel to the office every morning? Lastly, what is the weather like at the moment? We don't know what clothes to bring.", "Thanks a lot,<br>Steven"],
+    firma: "Ana López",
+    puntos: ["Meeting room for Tuesday and Wednesday", "Restaurant for Wednesday", "Transport from the hotel", "Weather and clothes"],
+    modelo: "<p>Dear Steven,</p><p><span class='f'>Thank you for your email.</span> We are all looking forward to your visit next week.</p><p>I have booked the big meeting room on the first floor for Tuesday and Wednesday from 9 a.m. to 6 p.m. It has a screen and a projector, <span class='k'>so</span> you can give your presentations there.</p><p>For the dinner, <span class='f'>I recommend</span> La Taula, a traditional restaurant in the city centre. The rice dishes are excellent. I have booked a table for twelve people on Wednesday at 9 p.m., <span class='k'>because</span> people in Spain usually have dinner quite late.</p><p>The office is only ten minutes from your hotel by taxi. <span class='f'>Would you like me to</span> book a taxi for you every morning at 8:30?</p><p>At the moment the weather is very nice: it is about 22 degrees during the day. <span class='k'>However,</span> it gets cooler in the evening, <span class='k'>so</span> you should bring a jacket.</p><p><span class='f'>Please let me know</span> if you need anything else.</p><p>Best regards,<br>Ana López<br>Office Administrator</p>" },
+  { id: "friend", tipo: "responder", sent: "April 28", directions: "Read the following email from your English friend Jenny and write an informal reply. Answer all her questions.", titulo: "Extra · Una amiga te visita", tono: "Informal",
+    rol: "yourself. Your English friend Jenny is writing to you",
+    de: "Jenny", para: "you", asunto: "My trip to Elche!",
+    cuerpo: ["Hi!", "Great news: I've got a long weekend in June and I'm coming to visit you in Elche! I arrive on Friday 12 June in the evening.", "What's the best way to get from the airport to your house? What places should we visit? I'd love to see something typical.", "And what clothes do I need? Is it very hot in June? Finally, are you free on Saturday? Maybe we can spend the day together.", "Love,<br>Jenny"],
+    firma: "",
+    puntos: ["How to get from the airport", "Places to visit", "Weather and clothes", "Plans for Saturday"],
+    modelo: "<p>Hi Jenny,</p><p>Thanks for your message! I'm so happy that you're coming to Elche. It's going to be a fantastic weekend.</p><p>Don't worry about the airport. It's only fifteen minutes from my house, <span class='k'>so</span> I'll pick you up in my car. Just send me your flight number and the time you arrive.</p><p>There are lots of things to see. You have to visit the Palm Grove, <span class='k'>because</span> it's the biggest one in Europe and it's beautiful. We can also walk around the old town and have some tapas in the main square.</p><p>In June it's usually very hot, about 30 degrees, <span class='k'>so</span> bring light clothes, a hat and sun cream. Don't forget your swimsuit!</p><p>Of course I'm free on Saturday. I've already planned the day: in the morning we can go to the beach in Santa Pola, and in the evening we'll have dinner with my family.</p><p>Can't wait to see you!</p><p>Love,<br>Carmen</p>" },
+  { id: "piso", tipo: "pedir", oficial: true, apellido: "Williams", titulo: "El piso en venta", tono: "Formal", sent: "July 12, 12:00 P.M.",
+    directions: "Respond to the email as Mr. Karstens, who is interested in buying the apartment. Make at least three requests for information.",
+    rol: "Mr. Karstens", de: "prospectus@beckenadministration.com", para: "pkarstens@fmail.de", asunto: "Enquiry: Apartment 14 Harrison St, Winton.",
+    cuerpo: ["Dear Mr. Karstens,", "Thank you for your enquiry regarding the apartment we have for sale. The apartment is 100 square metres with 3 rooms, a kitchen, a bathroom, and a guest toilet. It is on the 6th floor of the building and is fully modernized. Please look at the attached information, and if you have any further questions, simply email me.", "Kind regards,<br>George Williams"],
+    firma: "Peter Karstens",
+    puntos: ["Request for information 1", "Request for information 2", "Request for information 3"],
+    modelo: "<p>Dear Mr Williams,</p><p><span class='f'>Thank you for your email</span> and for the information about the apartment in Harrison Street. <span class='f'>I am very interested in</span> buying it, <span class='k'>but</span> I have a few questions before I make a decision.</p><p><span class='k'>First,</span> <span class='f'>could you tell me</span> the price of the apartment? <span class='f'>I would also like to know</span> how much the monthly costs of the building are, for example the cleaning and the lift, and whether the furniture in the kitchen is included in the price.</p><p><span class='k'>Secondly,</span> the apartment is on the sixth floor and I have a car, <span class='k'>so</span> I would like to ask if there is a lift and a parking space for residents.</p><p><span class='k'>Finally,</span> <span class='f'>I was wondering if</span> it would be possible to visit the apartment next week. I am free on Tuesday and Thursday afternoon, <span class='k'>because</span> I finish work at three o'clock.</p><p><span class='f'>Thank you in advance for your help.</span> <span class='f'>I look forward to hearing from you.</span></p><p>Kind regards,<br>Peter Karstens</p>" },
+  { id: "coche", tipo: "queja", oficial: true, apellido: "Reynolds", titulo: "El coche de alquiler", tono: "Formal", sent: "November 5",
+    directions: "Read the following email and write a formal reply as if you are Sarah Collins, the customer service manager at CityRentals, a car rental company. Your response should apologize for the issue, provide a solution, and offer assistance if needed.",
+    rol: "Sarah Collins", de: "Mark Reynolds (mark.reynolds@email.com)", para: "Customer Support (support@cityrentals.com)", asunto: "Urgent: Issue with My Car Rental",
+    cuerpo: ["Dear City Rentals Customer Support,", "I am writing to express my disappointment with my recent car rental experience. I booked a compact car through your website for my trip to Chicago from November 2 to November 6. However, when I arrived at your rental office, I was informed that no compact cars were available, and I was given a much larger SUV instead.", "I specifically booked a smaller car because I am not comfortable driving large vehicles, especially in a busy city. This situation caused me a lot of stress and inconvenience during my trip.", "Additionally, the SUV I received was not properly cleaned and had a low fuel level when I picked it up. This is unacceptable, as I expected a vehicle in good condition.", "I would like to request a partial refund for this inconvenience and an explanation of how this mistake happened. I look forward to your response.", "Sincerely,<br>Mark Reynolds"],
+    firma: "Sarah Collins",
+    puntos: ["Apologize for the problems", "Explain how the mistake happened", "Provide a solution (the refund)", "Offer assistance"],
+    modelo: "<p>Dear Mr Reynolds,</p><p><span class='f'>Thank you for your email</span>, and <span class='f'>please accept our sincere apologies for</span> your experience with CityRentals in Chicago. I completely understand how stressful it was for you.</p><p>I have checked your booking, and the problem happened <span class='k'>because</span> of a mistake in our booking system. It showed a compact car as available, <span class='k'>but</span> in fact all of them were already rented. <span class='k'>In addition,</span> our staff did not check the SUV properly before you picked it up, and that is not acceptable.</p><p><span class='f'>To solve the problem, we will</span> give you a refund of 40% of the price of your rental, and you will receive it in the next five days. <span class='f'>As an apology, we would also like to offer you</span> a free upgrade on your next rental with us.</p><p><span class='f'>If you have any other questions or need any help, please do not hesitate to contact me.</span></p><p>Kind regards,<br>Sarah Collins<br>Customer Service Manager, CityRentals</p>" },
+  { id: "curso", tipo: "pedir", apellido: "Byrne", titulo: "El curso de verano", tono: "Formal", sent: "March 3",
+    directions: "Respond to the email as Laura Martín, who wants to do the English summer course in Dublin. Make at least three requests for information.",
+    rol: "Laura Martín", de: "Helen Byrne (info@dublinsummerenglish.ie)", para: "Laura Martín", asunto: "Your enquiry: English summer course",
+    cuerpo: ["Dear Ms Martín,", "Thank you for your interest in our English summer course in Dublin. The course lasts four weeks, from 1 to 28 July, and there are 20 hours of classes every week, from Monday to Friday. Students can stay with a local family or in a student residence in the city centre.", "Please read the attached brochure, and if you have any questions, do not hesitate to contact me.", "Kind regards,<br>Helen Byrne"],
+    firma: "Laura Martín",
+    puntos: ["Request for information 1", "Request for information 2", "Request for information 3"],
+    modelo: "<p>Dear Ms Byrne,</p><p><span class='f'>Thank you for your email</span> and for the information about the summer course. <span class='f'>I am very interested in</span> it, and I would like to ask you a few questions before I book. My level of English is B1, and I want to improve my speaking.</p><p><span class='k'>First,</span> <span class='f'>could you tell me</span> how much the course costs? <span class='f'>I would also like to know</span> if the price includes the accommodation and the meals, and how many students there are in each class.</p><p><span class='k'>Secondly,</span> I prefer to stay with a family, <span class='k'>because</span> I want to practise my English every day. <span class='f'>Is it possible to</span> choose a family that lives near the school?</p><p><span class='k'>Finally,</span> <span class='f'>I was wondering if</span> there are any activities or excursions at the weekends, and whether they are included in the price.</p><p><span class='f'>Thank you in advance for your help.</span> <span class='f'>I look forward to hearing from you.</span></p><p>Kind regards,<br>Laura Martín</p>" }
+];
+
+/* ---------- juegos: contenido ---------- */
+const ORDENAR = [
+  { titulo: "Email 1 · Restaurante", partes: [
+    "Dear Mr Taylor,",
+    "Thank you for your email about the birthday dinner for your wife. I am happy to answer your questions.",
+    "First, we have a table for ten people on Saturday 20 April at 9 p.m. I have reserved it for you until Friday.",
+    "Regarding the menu, we offer a special birthday menu for €35 per person. It includes a starter, a main course, dessert and drinks.",
+    "Finally, of course you can bring your own cake. Our waiters will bring it to the table with candles at the end of the dinner.",
+    "If you have any other questions, please do not hesitate to contact me.",
+    "Kind regards,<br>Marta Sanz<br>Manager, Restaurante La Plaza"] },
+  { titulo: "Email 2 · Amigo", partes: [
+    "Hi Tom,",
+    "Thanks for your message! It was great to hear from you, and I'm really happy that you're coming to Spain in July.",
+    "First of all, you can stay at my flat. I've got a spare room, so you don't need to book a hotel.",
+    "Also, you asked about the weather. In July it's very hot, about 32 degrees, so bring light clothes and sun cream.",
+    "Finally, on Sunday we can go to a concert on the beach. My cousin plays in the band and the tickets are free!",
+    "Can't wait to see you. Write back soon!",
+    "Love,<br>Lucía"] }
+];
+
+/* En [[mal|bien|por qué]] van los errores. El resto del texto es normal. */
+const CAZA = [
+  { titulo: "Email 1 · Academia", texto:
+    "Dear Mr [[Peter|Brown|Mr y Ms van con el apellido, no con el nombre: Dear Mr Brown.]],\n" +
+    "Thank you for your email. [[I write you|I am writing to you|En los emails se usa el presente continuo: I am writing to you.]] to answer your questions about our English courses.\n" +
+    "The new courses start [[the next week|next week|Next week, last year, this month… van sin «the».]], on [[monday|Monday|Los días de la semana siempre llevan mayúscula.]] 3 March. Classes are on Tuesdays and Thursdays from 6 to 8 p.m. The price [[depends of|depends on|Depend va con «on».]] the level: €80 for A2 and €90 for B1.\n" +
+    "I have attached all the [[informations|information|Information no tiene plural.]] about the timetable. In the first class, the teacher will [[explain you|explain to you|Explain necesita «to» antes de la persona.]] how the course works. The groups are small: only ten [[people is|people are|People es plural: people are.]] in each class.\n" +
+    "[[Waiting your answer.|I look forward to hearing from you.|«Waiting your answer» es una traducción literal. La frase correcta es I look forward to hearing from you.]]\n" +
+    "Kind regards,\nLucía Pérez" },
+  { titulo: "Email 2 · Amiga", texto:
+    "Hi Jenny,\n" +
+    "Thanks for your message! I'm so happy that you [[come|are coming|Para planes ya decididos se usa el presente continuo: you are coming.]] to visit me in June.\n" +
+    "[[Yesterday I go|Yesterday I went|Con yesterday va el pasado: went.]] to the beach with my sister. The water was cold, but the weather was [[more better|better|Better ya es comparativo: no lleva more.]] than last week.\n" +
+    "Don't worry about the airport: I [[will can|can|Will y can no van juntos. Usa can o will be able to.]] pick you up in my car. My flat is [[near of|near|Near va sin «of».]] the station, so it's easy to go to the city centre.\n" +
+    "My sister wants to meet you. [[She have|She has|Con he, she, it: has.]] a lot of plans for us!\n" +
+    "See you soon,\nCarmen" }
+];
+
+const TERMINA = [
+  { s: "I look forward to ___", o: ["hearing from you.", "hear from you.", "heard from you."], c: 0, why: "Look forward to + -ing: I look forward to hearing from you." },
+  { s: "Thank you for your email ___", o: ["about our courses.", "of our courses.", "for our courses."], c: 0, why: "Thank you for your email about…" },
+  { s: "If you have any other questions, please do not hesitate ___", o: ["contact me.", "to contact me.", "contacting me."], c: 1, why: "Do not hesitate + to + verbo." },
+  { s: "Please accept our apologies ___", o: ["about the delay.", "of the delay.", "for the delay."], c: 2, why: "Apologies for… / sorry for…" },
+  { s: "I am writing ___ ask about the course.", o: ["for", "to", "for to"], c: 1, why: "Para expresar finalidad: to + verbo. Nunca «for to»." },
+  { s: "Could you let me know ___", o: ["which day is better for you?", "which day is it better for you?", "what day better is for you?"], c: 0, why: "Después de Could you let me know, el orden es el de una frase normal: which day is better." },
+  { s: "We are very interested ___", o: ["on your offer.", "in your offer.", "for your offer."], c: 1, why: "Interested in." },
+  { s: "I am afraid that the room is not available, ___", o: ["but we have another one.", "so we have another one.", "because we have another one."], c: 0, why: "Contraste (no hay habitación, pero hay otra) → but." },
+  { s: "Our flight arrives late, ___", o: ["although we will arrive at midnight.", "because we will arrive at midnight.", "so we will arrive at midnight."], c: 2, why: "Consecuencia → so." },
+  { s: "Would you like me ___", o: ["book a taxi for you?", "to book a taxi for you?", "booking a taxi for you?"], c: 1, why: "Would you like me + to + verbo." },
+  { s: "I suggest ___", o: ["coming this Thursday.", "to come this Thursday.", "come this Thursday."], c: 0, why: "Suggest + -ing: I suggest coming…" },
+  { s: "As an apology for the problem, ___", o: ["we will give you a 20% discount.", "we give you a 20% discounts.", "we will to give you a 20% discount."], c: 0, why: "Will + verbo sin «to», y discount en singular." }
+];
+
+/* frases para insertar en el modo guiado */
+const FRASES = {
+  formal: {
+    saludo: ["Dear Mr …,", "Dear Ms …,", "Dear Sir or Madam,"],
+    apertura: ["Thank you for your email about …", "I am happy to answer your questions.", "I am very sorry about …", "Thank you for choosing …"],
+    cuerpo: ["Regarding your question about …, ", "The price is …", "You can …", "I am afraid that … is not possible, but …", "I suggest …", "Would you like me to …?", "Could you let me know …?", "so", "because", "However, ", "In addition, ", "Finally, "],
+    cierre: ["If you have any other questions, please do not hesitate to contact me.", "I look forward to hearing from you.", "I hope this information is useful."],
+    despedida: ["Kind regards,", "Best regards,"]
+  },
+  informal: {
+    saludo: ["Hi …,", "Dear …,"],
+    apertura: ["Thanks for your message!", "It was great to hear from you.", "I'm so happy that …"],
+    cuerpo: ["Don't worry about …", "You have to visit …", "We can …", "so", "because", "Also, ", "Finally, "],
+    cierre: ["Can't wait to see you!", "Write back soon!"],
+    despedida: ["Love,", "See you soon,", "Take care,"]
+  }
+};
+
+/* ---------- prácticas nuevas ---------- */
+const EJ = {
+  p1: { titulo: "Entiende las Directions", items: [
+    { t: "Ejemplo 1 · ¿Quién eres tú?", o: ["George Williams, el vendedor", "Mr. Karstens, que quiere comprar el piso", "Un vecino del edificio"], c: "Mr. Karstens, que quiere comprar el piso", pista: "Busca «Respond to the email as…»." },
+    { t: "Ejemplo 1 · ¿Qué tienes que hacer?", o: ["Contestar las preguntas de George", "Hacer al menos tres peticiones de información", "Quejarte del piso"], c: "Hacer al menos tres peticiones de información", pista: "Mira la última frase de las Directions: «Make at least…»." },
+    { t: "Ejemplo 2 · ¿Quién eres tú?", o: ["Mark Reynolds, el cliente", "Sarah Collins, la responsable de atención al cliente"], c: "Sarah Collins, la responsable de atención al cliente", why: "«…as if you are Sarah Collins, the customer service manager…»." },
+    { t: "Ejemplo 2 · ¿Qué tres cosas tiene que tener tu respuesta?", o: ["Un saludo, una pregunta y una despedida", "Una disculpa, una solución y un ofrecimiento de ayuda", "Tu opinión sobre Chicago, el precio y una queja"], c: "Una disculpa, una solución y un ofrecimiento de ayuda", pista: "Busca «Your response should…»." },
+    { t: "Ejemplo 2 · ¿Qué tono usas?", o: ["Formal", "Informal"], c: "Formal", why: "Las Directions dicen «a formal reply» y escribes a un cliente." },
+    { t: "¿Qué es lo más importante para aprobar?", o: ["Usar palabras difíciles", "Hacer todo lo que piden las Directions", "Escribir el doble de palabras"], c: "Hacer todo lo que piden las Directions", pista: "Piensa en qué mira primero el examinador." }] },
+  ff: { titulo: "¿Formal o informal?", inst: "Decide si cada frase es de un email formal o informal. Aquí solo hay un intento.", items: [
+    { t: "Hi Jenny,", o: ["Formal", "Informal"], c: "Informal", why: "Hi + nombre: informal." },
+    { t: "Kind regards,", o: ["Formal", "Informal"], c: "Formal" },
+    { t: "Can't wait to see you!", o: ["Formal", "Informal"], c: "Informal", why: "Forma corta y exclamación: informal." },
+    { t: "Please do not hesitate to contact me.", o: ["Formal", "Informal"], c: "Formal", why: "Forma larga (do not) y frase hecha formal." },
+    { t: "Dear Mr Hart,", o: ["Formal", "Informal"], c: "Formal" },
+    { t: "Thanks for your message! It was great to hear from you.", o: ["Formal", "Informal"], c: "Informal" }] },
+  frases: { titulo: "Termina la frase", inst: "Elige el final correcto. Son frases que puedes usar en cualquier email.", items: TERMINA.map((q, i) => ({ t: q.s, o: q.o, c: q.o[q.c], why: q.why, pista: [
+    "Después de «look forward to» el verbo va en -ing.", "¿Qué preposición usas para decir «sobre»?", "hesitate va seguido de to + verbo.",
+    "Es la misma preposición que en «sorry ___ the delay».", "Para decir «para + verbo» solo hace falta una palabra.", "No es una pregunta directa: no se invierte el orden.",
+    "interested siempre va con la misma preposición.", "Las dos ideas se oponen: no hay una, pero hay otra.", "La segunda parte es la consecuencia de la primera.",
+    "Would you like me va seguido de to + verbo.", "suggest va seguido de un verbo en -ing.", "Después de will, el verbo va sin to."][i] })) },
+  partes: { titulo: "¿Qué parte del email es?", inst: "Estas frases son de la respuesta de una tienda de bicicletas. Di a qué parte del email pertenece cada una.", items: [
+    ["Dear Mr Carter,", "Saludo", "Es la primera línea del email."],
+    ["Thank you for your email about renting bikes in Altea.", "Apertura", "Agradece y dice de qué trata el email."],
+    ["Regarding the price, a bike costs €15 a day, and the helmet is included.", "Respuesta a una pregunta", "Da una información que el cliente ha pedido."],
+    ["I am happy to answer your questions.", "Apertura", "Va al principio, antes de contestar nada."],
+    ["You can pick up the bikes at 9 a.m., because the shop opens at that time.", "Respuesta a una pregunta", "Contesta a una pregunta concreta del cliente."],
+    ["If you have any other questions, please do not hesitate to contact me.", "Cierre", "Ofrece más ayuda antes de despedirse."],
+    ["Kind regards, Marta López", "Despedida", "Despedida + nombre."]
+  ].map(([t, c, pista]) => ({ t, c, pista, o: ["Saludo", "Apertura", "Respuesta a una pregunta", "Cierre", "Despedida"] })) }
+};
+
+const SUBRAYA = {
+  plan: "(1) mesa para 12 → sí, a las 21:00 · (2) platos vegetarianos → lasaña, risotto, ensaladas · (3) la tarta → sí, la sacamos con velas · (4) aparcamiento → hay uno público a 100 metros",
+  frases: [
+    ["Dear Ms Ruiz,", 0], ["My name is Paul Hart and I live in Alicante.", 0],
+    ["My wife's 40th birthday is on Saturday 12 April, and I would like to celebrate it at your restaurant.", 0],
+    ["Do you have a table for twelve people that evening?", 1], ["Some of our friends are vegetarian.", 0],
+    ["What vegetarian dishes do you have on the menu?", 1], ["I have bought a birthday cake for her.", 0],
+    ["Can we bring it to the restaurant?", 1], ["We went to your restaurant last summer and we loved it.", 0],
+    ["Finally, could you tell me if there is a car park near the restaurant?", 1], ["Thank you in advance,", 0], ["Paul Hart", 0]
+  ]
+};
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t).replace(/[&<>"]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]));
+const mem = (k, v) => { try { if (v === undefined) return localStorage.getItem("mpw3-" + k); if (v === null) localStorage.removeItem("mpw3-" + k); else localStorage.setItem("mpw3-" + k, v); } catch (e) { return null; } };
+const memJ = (k, v) => { if (v === undefined) { try { return JSON.parse(mem(k) || "null"); } catch (e) { return null; } } mem(k, v === null ? null : JSON.stringify(v)); };
+const fmt = (n) => String(Math.round(n * 10) / 10).replace(".", ",");
+const palabras = (t) => (t.trim().match(/[^\s]+/g) || []).length;
+const mezcla = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+
+/* =========================================================
+   PASOS Y MENÚ
+   ========================================================= */
+const PASOS = [...document.querySelectorAll(".paso")];
+let paso = 0;
+function abrirMenu(si) { $("side").classList.toggle("open", si); $("scrim").classList.toggle("open", si); $("menuBtn").setAttribute("aria-expanded", si); }
+$("menuBtn").addEventListener("click", () => abrirMenu(!$("side").classList.contains("open")));
+$("scrim").addEventListener("click", () => abrirMenu(false));
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") abrirMenu(false); });
+$("mlogo").innerHTML = document.querySelector(".side .brand").innerHTML.replace(/id="([^"]+)"/g, 'id="m-$1"').replace(/url\(#([^)]+)\)/g, "url(#m-$1)").replace(/href="#([^"]+)"/g, 'href="#m-$1"');
+document.querySelector(".side .brand").addEventListener("click", (e) => { e.preventDefault(); ir(0); abrirMenu(false); });
+
+const enviados = (modo) => TAREAS.filter((t) => mem((modo ? "env-" + modo + "-" : "enviado-") + t.id)).length;
+function pasoHecho(i) {
+  switch (i) {
+    case 0: return !!mem("visto-0");
+    case 1: return terminado("p1");
+    case 2: return !!(memJ("subraya") || {}).done;
+    case 3: return terminado("ff") && ORDENAR.every((_, k) => (memJ("ord-" + k) || {}).done);
+    case 4: return terminado("frases");
+    case 5: return CAZA.every((_, k) => (memJ("caza-" + k) || {}).done);
+    case 6: return terminado("partes");
+    case 7: return !!mem("hecho-guiado") || enviados("guiado") > 0;
+    case 8: return !!mem("hecho-examen") || enviados("examen") > 0;
+  }
+  return false;
+}
+const PENDIENTE = ["", "Contesta las preguntas para completar el paso", "Subraya las preguntas para completar el paso", "Haz las dos prácticas para completar el paso", "Termina las frases para completar el paso", "Corrige los dos emails para completar el paso", "Haz la práctica para completar el paso", "Envía un email en modo guiado", "Entrega un simulacro"];
+function pendiente(i) {
+  const falta = [];
+  if (i === 3) { if (!terminado("ff")) falta.push("¿Formal o informal?"); ORDENAR.forEach((o, k) => { if (!(memJ("ord-" + k) || {}).done) falta.push("Ordena · " + o.titulo); }); }
+  else if (i === 5) CAZA.forEach((c, k) => { if (!(memJ("caza-" + k) || {}).done) falta.push(c.titulo); });
+  return falta.length ? "Te falta: " + falta.join(", ") : PENDIENTE[i];
+}
+function puntos() {
+  let pts = 0, max = 0;
+  Object.keys(EJ).forEach((id) => { const s = est(id); max += EJ[id].items.length; EJ[id].items.forEach((_, i) => { pts += s.p[i] || 0; }); });
+  const sb = memJ("subraya") || {}; max += 4; pts += sb.pts || 0;
+  ORDENAR.forEach((_, k) => { max += 1; pts += (memJ("ord-" + k) || {}).pts || 0; });
+  CAZA.forEach((c, k) => { max += (c.texto.match(/\[\[/g) || []).length; pts += (memJ("caza-" + k) || {}).pts || 0; });
+  return { pts, max };
+}
+function pintarNav() {
+  $("navSteps").innerHTML = PASOS.map((s, i) => {
+    const ok = pasoHecho(i);
+    return `<li class="${ok ? "ok" : ""}"><button class="lnk ${i === paso ? "on" : ""}" type="button" data-go="${i}"><span class="num">${ok ? "✓" : i}</span>${esc(s.dataset.short)}</button></li>`;
+  }).join("");
+  $("navSteps").querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => { ir(+b.dataset.go); abrirMenu(false); }));
+  const hechos = PASOS.filter((_, i) => pasoHecho(i)).length;
+  $("progTxt").textContent = `Pasos completados: ${hechos} de ${PASOS.length}`;
+  $("progBar").style.width = (hechos / PASOS.length) * 100 + "%";
+  const { pts, max } = puntos();
+  $("progPts").textContent = `Puntos de las prácticas: ${fmt(pts)} de ${max}`;
+  $("progEnv").textContent = `Emails enviados: ${enviados()} de ${TAREAS.length}`;
+  $("navInfo").textContent = paso === 0 ? "" : pasoHecho(paso) ? "✓ Paso completado" : pendiente(paso);
+}
+function ir(i, sinScroll) {
+  paso = Math.max(0, Math.min(PASOS.length - 1, i));
+  PASOS.forEach((s, k) => { s.hidden = k !== paso; });
+  if (paso === 0) mem("visto-0", "1");
+  mem("paso", String(paso));
+  const s = PASOS[paso], tot = PASOS.length - 1;
+  $("stepKick").textContent = paso === 0 ? "Writing · Empieza aquí" : `Paso ${paso} de ${tot} · ${s.dataset.name}`;
+  $("mstep").textContent = paso === 0 ? "Empieza aquí" : `${paso}/${tot} · ${s.dataset.short}`;
+  $("pbar").style.width = $("mbar").style.width = (paso / tot) * 100 + "%";
+  $("prev").disabled = paso === 0;
+  $("next").disabled = paso === tot;
+  $("next").textContent = paso === 0 ? "Empezar →" : paso === tot ? "Fin" : `Siguiente: ${PASOS[paso + 1].dataset.short} →`;
+  if (history.replaceState) history.replaceState(null, "", "#paso-" + paso);
+  clearInterval(reloj); reloj = null;
+  const host = s.querySelector(".host");
+  document.querySelectorAll(".host").forEach((h) => { if (h !== host) h.innerHTML = ""; });
+  if (host) montarPractica(host);
+  pintarNav();
+  if (!sinScroll) window.scrollTo(0, 0);
+}
+$("prev").addEventListener("click", () => ir(paso - 1));
+$("next").addEventListener("click", () => ir(paso + 1));
+document.addEventListener("keydown", (e) => {
+  if (e.target.closest("input, textarea, button, [role=button]")) return;
+  if (e.key === "ArrowRight") ir(paso + 1); else if (e.key === "ArrowLeft") ir(paso - 1);
+});
+
+/* =========================================================
+   PREGUNTAS DE ELEGIR CON SEGUNDO INTENTO
+   ========================================================= */
+const est = (id) => memJ("ex-" + id) || { n: {}, e: {}, p: {}, malas: {}, pista: {} };
+const terminado = (id) => { const s = est(id); return EJ[id].items.every((_, i) => s.e[i]); };
+function pintarEj(id) {
+  const x = EJ[id], cont = document.querySelector(`[data-ex="${id}"]`);
+  cont.innerHTML = `<div class="ex"><div class="eh"><h3>${esc(x.titulo)}</h3><span class="score" hidden></span></div>
+    ${x.inst ? `<p class="inst">${esc(x.inst)}</p>` : `<p class="inst">Pulsa la opción correcta. Si fallas, verás una pista y tendrás otro intento.</p>`}
+    <ol class="items">${x.items.map((it, i) => `<li class="it" data-i="${i}"><span class="k">${String.fromCharCode(97 + i)})</span><div class="body">
+      <div class="q">${esc(it.t).replace("___", '<strong class="hole">______</strong>')}</div>
+      <div class="ops">${it.o.map((o) => `<button class="opt" type="button" data-i="${i}" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+      <div class="fb" hidden></div></div></li>`).join("")}</ol>
+    <div class="bar start"><button class="btn ghost" type="button" data-act="sol">Ver soluciones</button><button class="btn ghost" type="button" data-act="rep" hidden>Repetir</button><span class="msgres" aria-live="polite"></span></div></div>`;
+  cont.querySelectorAll(".opt").forEach((b) => b.addEventListener("click", () => elegir(id, +b.dataset.i, b.dataset.o)));
+  cont.querySelector('[data-act="sol"]').addEventListener("click", () => { const s = est(id); x.items.forEach((_, i) => { if (!s.e[i]) { s.e[i] = "fail"; s.p[i] = 0; } }); memJ("ex-" + id, s); refrescar(id); pintarNav(); });
+  cont.querySelector('[data-act="rep"]').addEventListener("click", () => { memJ("ex-" + id, null); pintarEj(id); pintarNav(); });
+  refrescar(id);
+}
+function elegir(id, i, o) {
+  const it = EJ[id].items[i], s = est(id);
+  if (s.e[i]) return;
+  if (o === it.c) { s.e[i] = "ok"; s.p[i] = s.n[i] ? 0.5 : 1; }
+  else {
+    s.n[i] = (s.n[i] || 0) + 1; (s.malas[i] = s.malas[i] || []).push(o);
+    if (s.n[i] >= 2 || it.o.length === 2) { s.e[i] = "fail"; s.p[i] = 0; } else s.pista[i] = it.pista || "Esa no es. Piénsalo otra vez.";
+  }
+  memJ("ex-" + id, s); refrescar(id); pintarNav();
+}
+function refrescar(id) {
+  const x = EJ[id], s = est(id), cont = document.querySelector(`[data-ex="${id}"]`);
+  x.items.forEach((it, i) => {
+    const li = cont.querySelector(`.it[data-i="${i}"]`), fb = li.querySelector(".fb"), e = s.e[i], n = s.n[i] || 0;
+    li.className = "it" + (e === "ok" ? " good" : e === "fail" ? " bad" : n ? " retry" : "");
+    li.querySelectorAll(".opt").forEach((o) => {
+      o.classList.remove("right", "wrong"); o.disabled = !!e;
+      if (e && o.dataset.o === it.c) o.classList.add("right");
+      if ((s.malas[i] || []).includes(o.dataset.o)) { o.classList.add("wrong"); o.disabled = true; }
+    });
+    if (e === "ok") { fb.hidden = !(it.why || n); fb.innerHTML = (n ? `<span class="tag k">Segundo intento · ½ punto</span>` : "") + (it.why ? "✓ " + esc(it.why) : ""); }
+    else if (e === "fail") { fb.hidden = false; fb.innerHTML = `<span class="tag s">Solución</span><b>${esc(it.c)}</b>${it.why ? " · " + esc(it.why) : ""}`; }
+    else if (n) { fb.hidden = false; fb.innerHTML = `<span class="tag p">Pista</span>${esc(s.pista[i] || "")}`; }
+    else fb.hidden = true;
+  });
+  const fin = x.items.every((_, i) => s.e[i]), tot = x.items.length, pts = x.items.reduce((a, _, i) => a + (s.p[i] || 0), 0);
+  const sc = cont.querySelector(".score"); sc.hidden = !fin; sc.textContent = `${fmt(pts)} / ${tot}`; sc.className = "score " + (pts === tot ? "ok" : pts / tot >= 0.7 ? "" : "mid");
+  cont.querySelector('[data-act="sol"]').hidden = fin; cont.querySelector('[data-act="rep"]').hidden = !fin;
+  cont.querySelector(".msgres").textContent = !fin ? "" : pts === tot ? "¡Perfecto!" : x.items.some((_, i) => s.e[i] === "fail") ? "Fíjate en las soluciones en naranja antes de seguir." : "¡Bien hecho!";
+}
+
+/* =========================================================
+   «BUSCA Y MARCA» CON SEGUNDO INTENTO (subrayar preguntas y encontrar errores)
+   estado: r (rondas hechas), f1 / f2 (índices encontrados en el 1.º y 2.º intento), done, pts
+   ========================================================= */
+function buscaMarca(cfg) {
+  const host = cfg.host, key = cfg.key, total = cfg.total;
+  let s = memJ(key) || { r: 0, f1: [], f2: [], done: false, pts: 0 };
+  host.innerHTML = `<div class="hunt ${cfg.clase || ""}">${cfg.html}</div>
+    <div id="${key}-hint"></div>
+    <div class="bar start"><button class="btn" type="button" data-a="ok">Comprobar</button><button class="btn ghost" type="button" data-a="sol">Ver solución</button><button class="btn ghost" type="button" data-a="rep" hidden>Empezar de nuevo</button><span class="msgres" aria-live="polite"></span></div>
+    <div class="after"></div>`;
+  const toks = [...host.querySelectorAll(".hunt [data-t]")];
+  const msg = host.querySelector(".msgres"), hint = $(key + "-hint");
+  toks.forEach((w) => {
+    const t = () => { if (s.done || w.classList.contains("hit")) return; w.classList.remove("wrongpick"); w.classList.toggle("sel"); };
+    w.addEventListener("click", t); w.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); t(); } });
+  });
+  const objetivos = () => toks.filter((w) => w.dataset.e !== undefined);
+  const pintar = () => {
+    const enc = new Set([...s.f1, ...s.f2]);
+    objetivos().forEach((w) => {
+      const e = +w.dataset.e; w.classList.remove("sel", "miss", "hit", "fix");
+      if (enc.has(e)) w.classList.add("hit"); else if (s.done) w.classList.add("miss");
+      if (s.done && cfg.fix) w.classList.add("fix");
+    });
+    if (s.done) toks.forEach((w) => w.classList.remove("sel"));
+    host.querySelector('[data-a="ok"]').hidden = s.done; host.querySelector('[data-a="sol"]').hidden = s.done; host.querySelector('[data-a="rep"]').hidden = !s.done;
+    if (s.done) {
+      hint.innerHTML = "";
+      msg.textContent = `Has encontrado ${s.f1.length + s.f2.length} de ${total}` + (s.f2.length ? ` (${s.f2.length} en el segundo intento)` : "") + ".";
+      host.querySelector(".after").innerHTML = cfg.despues(objetivos(), enc);
+      cfg.sc.hidden = false; cfg.sc.textContent = `${fmt(s.pts)} / ${total}`; cfg.sc.className = "score " + (s.pts === total ? "ok" : s.pts / total >= 0.7 ? "" : "mid");
+    } else {
+      host.querySelector(".after").innerHTML = ""; cfg.sc.hidden = true;
+      if (s.r === 1) { msg.textContent = `Llevas ${s.f1.length} de ${total}. Te faltan ${total - s.f1.length}: búscalas y pulsa Comprobar otra vez.`; hint.innerHTML = `<div class="hintbox"><span class="tag">Pista</span>${esc(cfg.pista)}</div>`; }
+      else { msg.textContent = ""; hint.innerHTML = ""; }
+    }
+  };
+  host.querySelector('[data-a="ok"]').addEventListener("click", () => {
+    const sel = toks.filter((w) => w.classList.contains("sel"));
+    if (!sel.length && s.r === 0) { msg.textContent = "Marca primero alguna."; return; }
+    const nuevos = sel.filter((w) => w.dataset.e !== undefined).map((w) => +w.dataset.e);
+    const extra = sel.filter((w) => w.dataset.e === undefined);
+    extra.forEach((w) => { w.classList.remove("sel"); w.classList.add("wrongpick"); });
+    if (s.r === 0) { s.f1 = nuevos; s.r = 1; if (s.f1.length === total) s.done = true; }
+    else { s.f2 = nuevos; s.r = 2; s.done = true; }
+    s.pts = s.f1.length + 0.5 * s.f2.length; memJ(key, s); pintar(); pintarNav();
+    if (extra.length && !s.done) msg.textContent += ` Las tachadas (${extra.length}) no lo eran.`;
+  });
+  host.querySelector('[data-a="sol"]').addEventListener("click", () => { s.done = true; s.pts = s.f1.length + 0.5 * s.f2.length; memJ(key, s); pintar(); pintarNav(); });
+  host.querySelector('[data-a="rep"]').addEventListener("click", () => { memJ(key, null); buscaMarca(cfg); pintarNav(); });
+  pintar();
+}
+
+/* ---------- paso 2: subrayar las preguntas ---------- */
+function montarSubraya() {
+  let e = 0;
+  const cuerpo = SUBRAYA.frases.map(([f, q], i) => `<span class="s" role="button" tabindex="0" data-t="${i}"${q ? ` data-e="${e++}"` : ""}>${esc(f)}</span>`);
+  const html = `<div class="hdr" style="font-size:15px;color:var(--soft);border-bottom:1.5px solid var(--line);padding-bottom:8px;margin-bottom:8px"><b style="color:var(--navy)">From:</b> Paul Hart · <b style="color:var(--navy)">To:</b> Ana Ruiz, Costa Blanca Restaurant · <b style="color:var(--navy)">Subject:</b> Birthday dinner</div>
+    <p>${cuerpo[0]}</p><p>${cuerpo.slice(1, 10).join(" ")}</p><p>${cuerpo[10]}<br>${cuerpo[11]}</p>`;
+  $("subraya").innerHTML = `<p>Eres <strong>Ana Ruiz</strong>, la encargada del restaurante. Pulsa sobre <strong>las frases que tienes que contestar</strong> (preguntas o peticiones) y pulsa Comprobar.</p><div class="gh"><span></span><span class="score" id="subSc" hidden></span></div><div id="subrayaIn"></div>`;
+  buscaMarca({ host: $("subrayaIn"), key: "subraya", total: e, html, clase: "mailtxt", sc: $("subSc"), fix: false,
+    pista: "Busca los signos de interrogación (?) y las frases con can, could, what, do you…",
+    despues: () => `<div class="box say"><div class="lbl">Paso 2: planifica</div><p>Así quedaría tu plan, con dos o tres palabras por pregunta:</p><p><strong>${esc(SUBRAYA.plan)}</strong></p></div>` });
+}
+
+/* ---------- paso 5: encontrar los errores ---------- */
+let huntIdx = 0;
+function tabs(cont, lista, act, fn, hecho) {
+  cont.innerHTML = lista.map((x, i) => `<button type="button" aria-pressed="${i === act}" data-i="${i}">${hecho && hecho(i) ? "✓ " : ""}${esc(x.titulo)}</button>`).join("");
+  cont.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => fn(Number(b.dataset.i))));
+}
+function montarCaza(i) {
+  huntIdx = i; tabs($("tabsHunt"), CAZA, i, montarCaza, (k) => (memJ("caza-" + k) || {}).done);
+  const C = CAZA[i]; let html = "", e = 0, t = 0;
+  C.texto.split("\n").forEach((linea) => {
+    html += "<p>" + linea.split(/(\[\[[^\]]+\]\])/).map((tz) => {
+      const m = tz.match(/^\[\[([^|]+)\|([^|]+)\|([^\]]+)\]\]$/);
+      if (m) return `<span class="w" role="button" tabindex="0" data-t="${t++}" data-e="${e++}" data-c="${esc(m[2])}" data-why="${esc(m[3])}">${esc(m[1])}</span>`;
+      return tz.split(/(\s+)/).map((p) => /^\s+$/.test(p) || !p ? p : `<span class="w" role="button" tabindex="0" data-t="${t++}">${esc(p)}</span>`).join("");
+    }).join("") + "</p>";
+  });
+  const sc = $("huntSc");
+  $("caza").innerHTML = `<p>Este email tiene <strong>${e} errores</strong>. Pulsa sobre las palabras que creas que están mal y luego pulsa <strong>Comprobar</strong>. Tienes dos intentos.</p><div id="cazaIn"></div>`;
+  buscaMarca({ host: $("cazaIn"), key: "caza-" + i, total: e, html, sc, fix: true,
+    pista: i === 0 ? "Revisa el saludo, los verbos (write, depend, explain), las palabras sin plural y la frase final." : "Revisa los tiempos verbales (yesterday, planes), las comparaciones, will can, las preposiciones y la -s de she.",
+    despues: (obj) => `<div class="box tip"><div class="lbl">Las correcciones</div><ul class="l">${obj.map((w) =>
+      `<li><strong>${esc(w.textContent)}</strong> → <strong>${esc(w.dataset.c)}</strong>${/[.!?]$/.test(w.dataset.c) ? "" : "."} ${esc(w.dataset.why)}</li>`).join("")}</ul></div>` +
+      (() => { const otro = CAZA.findIndex((_, k) => k !== i && !(memJ("caza-" + k) || {}).done); setTimeout(() => { tabs($("tabsHunt"), CAZA, i, montarCaza, (k) => (memJ("caza-" + k) || {}).done); const b = $("cazaOtro"); if (b) b.addEventListener("click", () => montarCaza(otro)); }); return otro >= 0 ? `<div class="bar start" style="margin-top:12px"><button class="btn orange" type="button" id="cazaOtro">Ahora el ${esc(CAZA[otro].titulo)} →</button></div>` : ""; })() });
+}
+
+/* ---------- paso 3: ordenar el email ---------- */
+let ordIdx = 0, ordEstado = [];
+function ordCargar(i) {
+  ordIdx = i; tabs($("tabsOrd"), ORDENAR, i, ordCargar, (k) => (memJ("ord-" + k) || {}).done);
+  const g = memJ("ord-" + i), n = ORDENAR[i].partes.length;
+  if (g && g.done) ordEstado = [...Array(n).keys()];
+  else { let o; do { o = mezcla([...Array(n).keys()]); } while (o.every((v, k) => v === k)); ordEstado = o; }
+  ordPintar(g && g.done); ordMsg();
+}
+function ordMsg() {
+  const g = memJ("ord-" + ordIdx) || {}, sc = $("ordSc");
+  sc.hidden = !g.done; sc.textContent = `${fmt(g.pts || 0)} / 1`; sc.className = "score " + (g.pts === 1 ? "ok" : g.pts ? "" : "mid");
+  $("ordRes").textContent = g.done ? (g.pts === 1 ? "¡Perfecto a la primera!" : g.pts ? "¡Conseguido! (½ punto: no fue a la primera)" : "Esta es la solución.") + " Saludo, apertura, una pregunta por párrafo, cierre y despedida." : "";
+  $("ordCheck").hidden = !!g.done; $("ordSol").textContent = g.done ? "Volver a jugar" : "Ver solución";
+  const otro = ORDENAR.findIndex((_, k) => k !== ordIdx && !(memJ("ord-" + k) || {}).done);
+  if (g.done && otro >= 0) { $("ordRes").insertAdjacentHTML("beforeend", ` <button class="btn orange" type="button" id="ordOtro" style="margin-top:8px">Ahora el ${esc(ORDENAR[otro].titulo)} →</button>`); $("ordOtro").addEventListener("click", () => ordCargar(otro)); }
+  tabs($("tabsOrd"), ORDENAR, ordIdx, ordCargar, (k) => (memJ("ord-" + k) || {}).done);
+}
+function ordPintar(marcar) {
+  const P = ORDENAR[ordIdx].partes;
+  $("ordList").innerHTML = ordEstado.map((p, k) => `<li draggable="true" data-k="${k}" class="${marcar ? (p === k ? "good" : "bad") : ""}">
+    <span class="pos">${k + 1}</span><span>${P[p]}</span>
+    <span class="mv"><button type="button" aria-label="Subir" data-up="${k}" ${k === 0 ? "disabled" : ""}>▲</button><button type="button" aria-label="Bajar" data-dn="${k}" ${k === ordEstado.length - 1 ? "disabled" : ""}>▼</button></span></li>`).join("");
+  $("ordList").querySelectorAll("[data-up]").forEach((b) => b.addEventListener("click", () => ordMover(+b.dataset.up, -1)));
+  $("ordList").querySelectorAll("[data-dn]").forEach((b) => b.addEventListener("click", () => ordMover(+b.dataset.dn, 1)));
+  let desde = null;
+  $("ordList").querySelectorAll("li").forEach((li) => {
+    li.addEventListener("dragstart", () => { desde = +li.dataset.k; li.classList.add("drag"); });
+    li.addEventListener("dragend", () => li.classList.remove("drag"));
+    li.addEventListener("dragover", (e) => e.preventDefault());
+    li.addEventListener("drop", (e) => { e.preventDefault(); const a = +li.dataset.k; if (desde === null || desde === a || (memJ("ord-" + ordIdx) || {}).done) return; const [x] = ordEstado.splice(desde, 1); ordEstado.splice(a, 0, x); ordPintar(); });
+  });
+}
+function ordMover(k, d) { if ((memJ("ord-" + ordIdx) || {}).done) return; const j = k + d; [ordEstado[k], ordEstado[j]] = [ordEstado[j], ordEstado[k]]; ordPintar(); }
+$("ordCheck").addEventListener("click", () => {
+  const g = memJ("ord-" + ordIdx) || { n: 0 }, bien = ordEstado.filter((p, k) => p === k).length, n = ordEstado.length;
+  ordPintar(true);
+  if (bien === n) { g.done = true; g.pts = g.n ? 0.5 : 1; memJ("ord-" + ordIdx, g); ordMsg(); pintarNav(); return; }
+  g.n = (g.n || 0) + 1; memJ("ord-" + ordIdx, g);
+  $("ordRes").textContent = `${bien} de ${n} en su sitio. Mueve los que están en naranja y vuelve a comprobar.` + (g.n === 1 ? " Pista: el saludo va primero y la despedida al final; la frase «If you have any other questions…» o «Write back soon!» es el cierre." : "");
+});
+$("ordSol").addEventListener("click", () => {
+  const g = memJ("ord-" + ordIdx) || {};
+  if (g.done) { memJ("ord-" + ordIdx, null); ordCargar(ordIdx); pintarNav(); return; }
+  memJ("ord-" + ordIdx, { done: true, pts: 0 }); ordEstado = ORDENAR[ordIdx].partes.map((_, k) => k); ordPintar(true); ordMsg(); pintarNav();
+});
+
+/* =========================================================
+   REVISIÓN AUTOMÁTICA Y NOTA ORIENTATIVA
+   ========================================================= */
+const ERRORES = [
+  [/\binformations\b/i, "«informations» → information (no tiene plural)"],
+  [/\badvices\b/i, "«advices» → advice (no tiene plural)"],
+  [/\bfurnitures\b/i, "«furnitures» → furniture (no tiene plural)"],
+  [/\bexplain (me|us|you|him|her|them)\b/i, "«explain me» → explain to me"],
+  [/\bthe (next|last) (week|month|year)\b/i, "«the next week» → next week (sin «the»)"],
+  [/\bI write you\b/i, "«I write you» → I am writing to you"],
+  [/\bwaiting (for )?your (answer|reply|response)\b/i, "«Waiting your answer» → I look forward to hearing from you"],
+  [/\bdepends? of\b/i, "«depend of» → depend on"],
+  [/\bpeople is\b/i, "«people is» → people are"],
+  [/\bmore (better|worse|bigger|cheaper|easier)\b/i, "«more better» → better (ya es comparativo)"],
+  [/\bwill can\b/i, "«will can» → can / will be able to"],
+  [/\bnear of\b/i, "«near of» → near"],
+  [/\bI am agree\b/i, "«I am agree» → I agree"],
+  [/\binterested (on|for)\b/i, "«interested on» → interested in"],
+  [/(?<!\b(does|did|can|will|could|would|should|may|might|must|to|let|make|help|of) )\b(he|she|it) (have|go|want|need|work|live)\b/i, "con he, she, it el verbo lleva -s: she has, he does, it works…"]
+];
+const CONTRACCIONES = /\b(I'm|you're|we're|they're|it's|don't|doesn't|can't|won't|isn't|aren't|I'll|we'll|you'll|I've|we've|didn't|haven't|hasn't|wouldn't|couldn't|shouldn't|let's|that's|there's|I'd|we'd)\b/gi;
+const CONECTORES = /\b(because|so|however|although|also|in addition|but|as|finally|then|that means|therefore|first|regarding)\b/gi;
+const DESPEDIDAS = /(kind regards|best regards|regards|yours sincerely|yours faithfully|best wishes|love|see you soon|take care|all the best|cheers)\s*,?/i;
+
+function revisar(texto, t) {
+  const r = [], formal = t.tono === "Formal";
+  const lineas = texto.split("\n").map((l) => l.trim()).filter(Boolean);
+  const primera = lineas[0] || "";
+  if (/^(dear|hi|hello)\b/i.test(primera)) {
+    if (formal && /^(hi|hello)\b/i.test(primera)) r.push(["warn", "Saludo informal en un email formal", "En formal empieza con Dear Mr/Ms + apellido."]);
+    else r.push(["ok", "Empiezas con un saludo"]);
+    const m = primera.match(/^dear (mr|ms|mrs|miss)\.? ([a-záéíóúñ'-]+)/i);
+    if (m && t.apellido && m[2].toLowerCase() !== t.apellido.toLowerCase()) r.push(["warn", `«${m[0]}» no es correcto`, `Mr y Ms van con el apellido: Dear ${m[1][0].toUpperCase() + m[1].slice(1).toLowerCase()} ${t.apellido}.`]);
+    if (!/,\s*$/.test(primera) && primera.length < 40) r.push(["info", "Pon una coma después del saludo", "Dear Mr Davies,"]);
+  } else r.push(["warn", "Falta el saludo", formal ? "Empieza con Dear Mr/Ms + apellido." : "Empieza con Hi + nombre."]);
+  if (DESPEDIDAS.test(lineas.slice(-4).join(" "))) r.push(["ok", "Terminas con una despedida"]);
+  else r.push(["warn", "Falta la despedida", formal ? "Termina con Kind regards, y tu nombre." : "Termina con Love, o See you soon, y tu nombre."]);
+  const parrafos = texto.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).length;
+  const necesarios = 4;
+  if (parrafos >= necesarios) r.push(["ok", `Está organizado en párrafos (${parrafos})`]);
+  else r.push(["warn", `Solo hay ${parrafos} ${parrafos === 1 ? "párrafo" : "párrafos"}`, `Deja una línea en blanco entre párrafos: apertura, uno por cada pregunta (${t.puntos.length}) y cierre.`]);
+  const n = palabras(texto);
+  r.push(n >= MIN_PALABRAS ? ["ok", `Tienes ${n} palabras`] : ["warn", `Tienes ${n} palabras`, `En el examen necesitas al menos ${MIN_PALABRAS}. Añade un detalle o una razón en cada párrafo.`]);
+  const errores = ERRORES.filter(([re]) => re.test(texto)).map(([, m]) => m);
+  if (errores.length) r.push(["warn", `${errores.length === 1 ? "Un error típico" : errores.length + " errores típicos"}`, errores.join(" · ")]);
+  else r.push(["ok", "No hay ninguno de los errores típicos más comunes"]);
+  if (formal) {
+    const cs = [...new Set((texto.match(CONTRACCIONES) || []).map((c) => c))];
+    if (cs.length) r.push(["info", "Formas cortas en un email formal", `Mejor la forma larga: ${cs.slice(0, 5).join(", ")} → I am, do not, it is…`]);
+  }
+  const con = new Set((texto.match(CONECTORES) || []).map((c) => c.toLowerCase()));
+  r.push(con.size >= 3 ? ["ok", `Usas conectores (${[...con].slice(0, 5).join(", ")})`] : ["info", "Usa más conectores", "because, so, however, also, finally… unen tus ideas y suben la nota."]);
+  if (texto.includes("…")) r.push(["warn", "Hay «…» sin completar", "Cambia los «…» de las frases que has insertado por tu información."]);
+  if (/(^|[\s.,!?])i([\s',.!?]|$)/.test(texto)) r.push(["warn", "«i» en minúscula", "El pronombre I siempre va en mayúscula."]);
+  const min = texto.match(/\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|march|april|june|july|august|september|october|november|december)\b/);
+  if (min) r.push(["warn", `«${min[0]}» en minúscula`, "Días y meses llevan mayúscula en inglés: Monday, March."]);
+  return r;
+}
+function pintaRevision(r) {
+  const avisos = r.filter((x) => x[0] === "warn").length;
+  return `<div class="review"><div class="lbl">Revisión automática · ${avisos ? avisos + (avisos === 1 ? " cosa que mejorar" : " cosas que mejorar") : "¡todo bien!"}</div><ul>${r.map(([k, a, d]) =>
+    `<li class="${k}"><span class="m" aria-hidden="true">${k === "ok" ? "✓" : k === "warn" ? "!" : "i"}</span><span><strong>${esc(a)}</strong>${d ? `<br><span class="d">${esc(d)}</span>` : ""}</span></li>`).join("")}</ul>
+    <p class="d" style="font-size:14px;color:var(--soft)">La revisión automática busca fallos frecuentes, pero no lo detecta todo: tu profesora corregirá el resto.</p></div>`;
+}
+const CHIPS = {
+  pedir: { apertura: ["Thank you for your email about …", "I am very interested in …", "I have a few questions."], cuerpo: ["First, could you tell me …?", "I would like to know if …", "I was wondering if …", "Is it possible to …?", "Could you send me more information about …?", "Secondly, ", "Finally, ", "because", "so"], cierre: ["Thank you in advance for your help.", "I look forward to hearing from you."] },
+  queja: { apertura: ["Thank you for your email.", "Please accept our sincere apologies for …", "I am very sorry about …"], cuerpo: ["This happened because …", "To solve the problem, we will …", "We will give you a refund of …", "As an apology, we would like to offer you …", "I can assure you that this will not happen again.", "In addition, ", "However, ", "so"], cierre: ["If you have any other questions or need any help, please do not hesitate to contact me.", "Once again, we apologise for the inconvenience."] }
+};
+function chipsDe(t, F, tipo) { return (CHIPS[t.tipo] || {})[tipo] || F[tipo]; }
+const PETICION = /(\?|\bI would like to know\b|\bI was wondering\b|\bI would like to ask\b|\bplease (send|tell|let me know)\b)/i;
+function revisarTodo(texto, t) {
+  const r = revisar(texto, t);
+  if (t.tipo === "pedir") {
+    const n = texto.split(/(?<=[.?!])\s+|\n+/).filter((f) => PETICION.test(f) && !/hesitate|look forward/i.test(f)).length;
+    r.splice(2, 0, n >= 3 ? ["ok", `Haces ${n} preguntas o peticiones`] : ["warn", `Solo hay ${n} ${n === 1 ? "pregunta o petición" : "preguntas o peticiones"}`, "Las Directions piden al menos tres. Usa Could you tell me…?, I would like to know…, I was wondering if…"]);
+  }
+  if (t.tipo === "queja") {
+    r.splice(2, 0,
+      /\b(sorry|apolog(y|ies|ise|ize))/i.test(texto) ? ["ok", "Pides disculpas"] : ["warn", "Falta pedir disculpas", "Please accept our apologies for… / I am very sorry about…"],
+      /\b(refund|discount|free|we will|we would like to offer|voucher|replace|repair)/i.test(texto) ? ["ok", "Ofreces una solución"] : ["warn", "Falta una solución", "To solve the problem, we will… / We will give you a refund of…"],
+      /\b(hesitate|if you need|let me know|happy to help|contact me|contact us)/i.test(texto) ? ["ok", "Ofreces ayuda"] : ["warn", "Falta ofrecer ayuda", "If you need any help, please do not hesitate to contact me."]);
+  }
+  return r;
+}
+function nota(texto, t, marcados) {
+  const formal = t.tono === "Formal", n = palabras(texto);
+  const lineas = texto.split("\n").map((l) => l.trim()).filter(Boolean), primera = lineas[0] || "";
+  const saludo = /^(dear|hi|hello)\b/i.test(primera) && !(formal && /^(hi|hello)\b/i.test(primera));
+  const desp = DESPEDIDAS.test(lineas.slice(-4).join(" "));
+  const parr = texto.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).length;
+  const errs = ERRORES.filter(([re]) => re.test(texto)).length + (/(^|[\s.,!?])i([\s',.!?]|$)/.test(texto) ? 1 : 0);
+  const con = new Set((texto.match(CONECTORES) || []).map((c) => c.toLowerCase())).size;
+  const contr = formal && (texto.match(CONTRACCIONES) || []).length > 0;
+  const filas = [
+    ["Hace todo lo que piden (según tu lista)", Math.round((3 * marcados) / t.puntos.length * 2) / 2, 3],
+    [`Longitud (${n} palabras)`, n >= MIN_PALABRAS ? 2 : n >= MIN_PALABRAS - 30 ? 1 : 0, 2],
+    ["Saludo y despedida", (saludo ? 0.5 : 0) + (desp ? 0.5 : 0), 1],
+    [`Párrafos (${parr})`, parr >= 4 ? 1 : 0, 1],
+    [`Errores típicos (${errs})`, errs === 0 ? 1.5 : errs === 1 ? 1 : errs === 2 ? 0.5 : 0, 1.5],
+    [`Conectores (${con})`, con >= 3 ? 1 : con >= 1 ? 0.5 : 0, 1],
+    ["Tono", formal ? (contr ? 0 : 0.5) : 0.5, 0.5]
+  ];
+  return { total: filas.reduce((a, f) => a + f[1], 0), filas };
+}
+
+/* =========================================================
+   PRÁCTICA DE ESCRITURA (pasos 7 y 8)
+   ========================================================= */
+let actual = null, reloj = null, inicio = null, modo = "guiado", host = null;
+function montarPractica(h) {
+  host = h; modo = h.dataset.modo; actual = null;
+  h.innerHTML = `<form class="who" id="whoForm"><label for="nombre">Tu nombre y apellidos<input type="text" id="nombre" autocomplete="name" placeholder="Por ejemplo, Carmen López" required></label></form>
+    <p class="kicker" style="color:var(--navy)">Elige un email</p>
+    <div class="cards" id="cards"></div>
+    ${modo === "examen" ? `<button class="btn ghost rand" type="button" id="azar">🎲 Que me toque uno al azar</button>` : ""}
+    <div id="panel"></div>`;
+  $("whoForm").addEventListener("submit", (e) => e.preventDefault());
+  $("nombre").value = mem("nombre") || "";
+  $("nombre").addEventListener("input", () => mem("nombre", $("nombre").value));
+  if ($("azar")) $("azar").addEventListener("click", () => { const libres = TAREAS.map((t, i) => i).filter((i) => !mem("env-examen-" + TAREAS[i].id)); const op = libres.length ? libres : TAREAS.map((_, i) => i); abrir(op[Math.floor(Math.random() * op.length)]); });
+  tarjetas();
+}
+function tarjetas() {
+  $("cards").innerHTML = TAREAS.map((t, i) => {
+    const [bg, fg] = COLORES[i], hecho = mem("env-" + modo + "-" + t.id);
+    return `<button class="card" type="button" data-i="${i}" aria-pressed="${actual === i}" style="background:${bg};color:${fg}">
+      <b>${i + 1}</b><span>${esc(t.titulo)}<small>${t.tono} · ${TIPO_TXT[t.tipo]}${t.oficial ? " · ★ Examen oficial" : ""}</small></span>${hecho ? '<span class="done">✓ ENVIADO</span>' : ""}</button>`;
+  }).join("");
+  $("cards").querySelectorAll(".card").forEach((b) => b.addEventListener("click", () => abrir(Number(b.dataset.i))));
+}
+function partesGuia(t) {
+  return [["saludo", "Saludo", "", "saludo"], ["apertura", "Apertura", "Agradece y di de qué escribes.", "apertura"]]
+    .concat(t.puntos.map((p, k) => ["p" + k, (t.tipo === "pedir" ? "Petición " : t.tipo === "queja" ? "Punto " : "Pregunta ") + (k + 1), t.tipo === "pedir" ? "Una pregunta o petición, con una razón o un detalle." : p, "cuerpo"]))
+    .concat([["cierre", "Cierre", "Ofrece ayuda.", "cierre"], ["despedida", "Despedida", "Despedida + tu nombre.", "despedida"]]);
+}
+function textoActual() {
+  if (modo === "examen") return ($("texto") || {}).value || "";
+  return partesGuia(TAREAS[actual]).map(([id]) => ($("g-" + id).value || "").trim()).filter(Boolean).join("\n\n");
+}
+function abrir(i) {
+  actual = i; const t = TAREAS[i];
+  clearInterval(reloj); reloj = null; inicio = Date.now();
+  tarjetas();
+  const ex = modo === "examen";
+  $("panel").style.setProperty("--acc", COLORES[i][0] === "#F2C14E" ? "#B58A1E" : COLORES[i][0]);
+  $("panel").innerHTML = `<div class="panel" id="panelIn">
+      <div><div class="kicker">Email ${i + 1} de ${TAREAS.length} · ${t.tono} · ${ex ? "Simulacro" : "Modo guiado"}</div><h3>${esc(t.titulo)}</h3></div>
+      <p class="task">Directions: ${esc(t.directions)} (Min. ${MIN_PALABRAS} words)</p>
+      <div class="mail"><div class="hdr"><span><b>From:</b> ${esc(t.de)}</span><span><b>To:</b> ${esc(t.para)}</span><span><b>Subject:</b> ${esc(t.asunto)}</span><span><b>Sent:</b> ${esc(t.sent)}</span></div>${t.cuerpo.map((p) => `<p>${p}</p>`).join("")}</div>
+      <div id="editor"></div>
+      <div class="bar"><span>Palabras: <span class="wc low" id="wc">0</span> / ${MIN_PALABRAS}</span><span style="font-size:14px;color:var(--soft)">Se guarda solo en este navegador mientras escribes.</span></div>
+      <div class="check" id="check"><div class="lbl">¿Has hecho todo lo que piden?</div>
+        ${t.puntos.map((p, k) => `<label for="p${k}"><input type="checkbox" id="p${k}" data-p="${esc(p)}">${k + 1}. ${esc(p)}</label>`).join("")}</div>
+      ${ex ? "" : `<div class="bar start"><button class="btn ghost" type="button" id="revisarBtn">Revisar mi email</button></div>`}
+      <div id="revision"></div><div id="aviso"></div>
+      <div class="bar"><button class="btn orange" type="button" id="enviar">${ex ? "Entregar" : "Enviar a mi profesora"}</button><span id="pista" style="font-size:15px;color:var(--soft)"></span></div>
+      <div id="estado"></div><div id="notaBox"></div><div id="modeloBox"></div></div>`;
+  if (!ex) $("revisarBtn").addEventListener("click", () => { $("revision").innerHTML = pintaRevision(revisarTodo(textoActual(), t)); });
+  $("enviar").addEventListener("click", () => intentar(false));
+  editor();
+  $("panelIn").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function editor() {
+  const t = TAREAS[actual], ed = $("editor");
+  if (modo === "examen") {
+    ed.innerHTML = `<div class="bar"><span class="timer" id="tiempo">${MINUTOS}:00 · el tiempo empieza cuando escribas</span><button class="btn ghost" type="button" id="parar">Parar el tiempo</button></div>
+      <label for="texto" class="kicker" style="color:var(--navy)">Tu respuesta</label>
+      <textarea id="texto" spellcheck="false" placeholder="Escribe aquí tu email…">${esc(mem("ex-txt-" + t.id) || "")}</textarea>`;
+    const ta = $("texto");
+    ta.addEventListener("input", () => { mem("ex-txt-" + t.id, ta.value); cuenta(); if (!reloj && !ed.dataset.parado) cronometro(); });
+    $("parar").addEventListener("click", () => { clearInterval(reloj); reloj = null; ed.dataset.parado = "1"; $("tiempo").textContent = "Tiempo parado"; });
+  } else {
+    const F = FRASES[t.tono === "Formal" ? "formal" : "informal"], guard = memJ("gu-" + t.id) || {};
+    ed.innerHTML = `<div class="box say"><div class="lbl">Cómo funciona</div><p>Escribe cada parte en su caja. Debajo de la caja en la que estés escribiendo aparecen frases azules: púlsalas para añadirlas y completa los «…».</p></div>
+      <div class="guide">${partesGuia(t).map(([id, nom, ayuda, tipo], k) => {
+        const col = tipo === "cuerpo" ? COLORES[2] : tipo === "saludo" || tipo === "despedida" ? COLORES[0] : COLORES[1];
+        return `<div class="gpart ${tipo === "cuerpo" ? "body" : ""} ${k === 0 ? "act" : ""}"><div class="gl"><b style="background:${col[0]};color:${col[1]}">${esc(nom)}</b><span>${esc(ayuda)}</span></div>
+        <textarea id="g-${id}" spellcheck="false" aria-label="${esc(nom)}">${esc(guard[id] || "")}</textarea>
+        <div class="chips">${chipsDe(t, F, tipo).map((f) => `<button class="chip" type="button" data-for="g-${id}">${esc(f)}</button>`).join("")}</div></div>`;
+      }).join("")}</div>`;
+    ed.querySelectorAll("textarea").forEach((ta) => {
+      ta.addEventListener("focus", () => ed.querySelectorAll(".gpart").forEach((g) => g.classList.toggle("act", g.contains(ta))));
+      ta.addEventListener("input", () => { guard[ta.id.slice(2)] = ta.value; memJ("gu-" + t.id, guard); cuenta(); });
+    });
+    ed.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => {
+      const ta = $(c.dataset.for), f = c.textContent, a = ta.selectionStart ?? ta.value.length, b = ta.selectionEnd ?? a;
+      const antes = ta.value.slice(0, a), sep = antes && !/\s$/.test(antes) ? " " : "";
+      ta.value = antes + sep + f + ta.value.slice(b);
+      const pos = (antes + sep + f).length, hueco = f.indexOf("…");
+      ta.focus(); if (hueco >= 0) ta.setSelectionRange(antes.length + sep.length + hueco, antes.length + sep.length + hueco + 1); else ta.setSelectionRange(pos, pos);
+      ta.dispatchEvent(new Event("input"));
+    }));
+  }
+  cuenta();
+}
+function cuenta() { const n = palabras(textoActual()), wc = $("wc"); wc.textContent = n; wc.className = "wc " + (n >= MIN_PALABRAS ? "good" : "low"); }
+function cronometro() {
+  const fin = Date.now() + MINUTOS * 60000; inicio = Date.now();
+  const tic = () => {
+    const out = $("tiempo"); if (!out) { clearInterval(reloj); reloj = null; return; }
+    const r = Math.max(0, fin - Date.now()), m = Math.floor(r / 60000), s = Math.floor((r % 60000) / 1000);
+    out.textContent = `Te quedan ${m}:${String(s).padStart(2, "0")}`;
+    if (r === 0) { clearInterval(reloj); reloj = null; out.textContent = "¡Tiempo! Repasa tu lista y entrega."; }
+  };
+  tic(); reloj = setInterval(tic, 1000);
+}
+function intentar(forzar) {
+  const t = TAREAS[actual], texto = textoActual().trim(), n = palabras(texto), nombre = $("nombre").value.trim(), ex = modo === "examen";
+  $("aviso").innerHTML = "";
+  if (!nombre) { $("nombre").focus(); $("nombre").reportValidity(); $("pista").textContent = "Escribe tu nombre arriba, en «Tu nombre y apellidos»."; return; }
+  if (n < 20) { $("pista").textContent = "Escribe tu respuesta antes de enviarla."; return; }
+  const rev = revisarTodo(texto, t), avisos = rev.filter((x) => x[0] === "warn").length;
+  const marcados = [...document.querySelectorAll("#check input")].filter((c) => c.checked).length;
+  if (!forzar && (ex ? marcados < t.puntos.length : (avisos || marcados < t.puntos.length))) {
+    if (!ex) $("revision").innerHTML = pintaRevision(rev);
+    const fallos = [];
+    if (!ex && avisos) fallos.push(`la revisión ha encontrado <strong>${avisos} ${avisos === 1 ? "cosa" : "cosas"} que mejorar</strong>`);
+    if (marcados < t.puntos.length) fallos.push(`has marcado <strong>${marcados} de ${t.puntos.length}</strong> puntos de la lista «¿Has hecho todo lo que piden?»`);
+    $("aviso").innerHTML = `<div class="confirm"><p>Antes de ${ex ? "entregar" : "enviar"}: ${fallos.join(" y ")}. ¿Quieres repasarlo o ${ex ? "entregarlo" : "enviarlo"} así?</p>
+      <div class="bar start"><button class="btn ghost" type="button" id="corregir">Repasar</button><button class="btn" type="button" id="igual">${ex ? "Entregar así" : "Enviar así"}</button></div></div>`;
+    $("corregir").addEventListener("click", () => { $("aviso").innerHTML = ""; ($("revision").firstChild ? $("revision") : $("check")).scrollIntoView({ behavior: "smooth", block: "start" }); });
+    $("igual").addEventListener("click", () => intentar(true));
+    return;
+  }
+  $("pista").textContent = "";
+  clearInterval(reloj); reloj = null;
+  const nt = nota(texto, t, marcados);
+  const lista = [...document.querySelectorAll("#check input")].map((c, k) => `${c.checked ? "✓" : "✗"} ${k + 1}. ${c.dataset.p}`).join(" | ");
+  const datos = { tipo: "writing", nombre, tarea: `${actual + 1} · ${t.titulo} (${modo})`, palabras: n, minimo: MIN_PALABRAS,
+    puntos: `${marcados}/${t.puntos.length}: ${lista} | Revisión automática: ${avisos ? avisos + " avisos" : "sin avisos"} | Nota orientativa: ${fmt(nt.total)}/10`,
+    minutos: Math.max(1, Math.round((Date.now() - inicio) / 60000)), texto };
+  mem("hecho-" + modo, "1"); pintarNav();
+  $("enviar").disabled = true;
+  enviar(datos, t, () => {
+    if (ex) {
+      $("notaBox").innerHTML = `<div class="nota"><div class="kicker">Nota orientativa</div><div class="big2">${fmt(nt.total)}<span style="font-size:36px;letter-spacing:0"> / 10</span></div>
+        <div class="tbl"><table><tbody>${nt.filas.map(([a, p, m]) => `<tr><td>${esc(a)}</td><td>${fmt(p)} / ${fmt(m)}</td></tr>`).join("")}</tbody></table></div>
+        <p>Es una nota automática y aproximada: cuenta cosas que se pueden medir (palabras, párrafos, errores típicos, conectores…). Tu profesora te dará la nota de verdad.</p></div>`;
+      $("revision").innerHTML = pintaRevision(rev);
+    }
+  });
+}
+function enviar(datos, t, despues) {
+  const estado = $("estado");
+  const pinta = (ok) => {
+    estado.innerHTML = `<div class="sent ${ok ? "ok" : "no"}"><span class="ic" aria-hidden="true">${ok ? "✓" : "!"}</span><span>${ok ? "Tu email se ha enviado a tu profesora." : ENVIO_URL ? "No se ha podido enviar. Copia tu texto y mándaselo a tu profesora por otra vía." : "Esta versión no envía los emails. Copia tu texto y mándaselo a tu profesora."}</span></div>`;
+    $("enviar").disabled = false;
+    $("enviar").textContent = ok ? "Enviar otra versión" : "Volver a intentarlo";
+    if (ok) { mem("enviado-" + t.id, "1"); mem("env-" + modo + "-" + t.id, "1"); tarjetas(); pintarNav(); }
+    if (despues) despues(ok);
+    $("modeloBox").innerHTML = `<div class="box tip"><div class="lbl">Ahora compara</div><p>Lee el modelo y busca: ¿contesta lo mismo que tú? ¿Qué frases útiles y conectores usa que tú no has usado?</p></div>
+      <div class="mail">${t.modelo}</div><div class="legend"><span><span class="f">frase útil</span></span><span><span class="k">conector</span></span><span>${palabras(t.modelo.replace(/<[^>]+>/g, " "))} palabras</span></div>`;
+  };
+  if (!ENVIO_URL) { pinta(false); return; }
+  estado.innerHTML = `<div class="sent"><span class="ic" aria-hidden="true">…</span><span>Enviando tu email…</span></div>`;
+  const url = ENVIO_URL + "?callback=r&datos=" + encodeURIComponent(JSON.stringify(datos));
+  if (url.length > 7500) {
+    fetch(ENVIO_URL, { method: "POST", mode: "no-cors", credentials: "omit", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(datos) })
+      .then(() => pinta(true)).catch(() => pinta(false));
+    return;
+  }
+  const ctrl = new AbortController(), alarma = setTimeout(() => ctrl.abort(), 25000);
+  fetch(url, { method: "GET", mode: "cors", credentials: "omit", redirect: "follow", signal: ctrl.signal })
+    .then((r) => r.text())
+    .then((txt) => {
+      clearTimeout(alarma);
+      const m = txt.match(/\{[\s\S]*\}/); let r = null; try { r = m ? JSON.parse(m[0]) : null; } catch (e) {}
+      if (!(r && r.ok)) console.warn("Respuesta de Google:", txt.slice(0, 300));
+      pinta(!!(r && r.ok));
+    })
+    .catch((err) => { clearTimeout(alarma); console.warn("Sin confirmación de Google:", err); pinta(navigator.onLine !== false && err.name !== "AbortError"); });
+}
+
+/* =========================================================
+   ARRANQUE
+   ========================================================= */
+Object.keys(EJ).forEach(pintarEj);
+montarSubraya(); montarCaza(0); ordCargar(0);
+const h0 = (location.hash.match(/^#paso-(\d+)$/) || [])[1];
+ir(h0 !== undefined ? +h0 : +(mem("paso") || 0), true);
+window.addEventListener("hashchange", () => { const m = location.hash.match(/^#paso-(\d+)$/); if (m && +m[1] !== paso) ir(+m[1]); });
+</script>
+
+</body>
+</html>
